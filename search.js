@@ -1,62 +1,93 @@
 /* =====================================================
    Alex Karaoke V2.1
    search.js
+
+   Moteur de recherche intelligent
 ===================================================== */
 
-/*
-    Supprime les accents
-*/
-function normalizeText(text) {
+"use strict";
 
-    if (!text) return "";
+
+
+/* =====================================================
+   NORMALISATION TEXTE
+===================================================== */
+
+
+function normalizeSearch(text){
+
+    if(!text) return "";
 
     return text
+
         .toString()
+
         .toLowerCase()
+
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
+
+        .replace(/[\u0300-\u036f]/g,"")
+
+        .replace(/[^a-z0-9\s]/g,"")
+
         .trim();
 
 }
 
-/*
-    Distance de Levenshtein
-    Permet de trouver "beatl"
-    -> Beatles
-*/
 
-function levenshtein(a, b) {
 
-    a = normalizeText(a);
-    b = normalizeText(b);
+/* =====================================================
+   DISTANCE ENTRE DEUX TEXTES
+   (Levenshtein)
+===================================================== */
 
-    const matrix = [];
 
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
+function levenshtein(a,b){
+
+    const matrix=[];
+
+
+    for(let i=0;i<=b.length;i++){
+
+        matrix[i]=[i];
+
     }
 
-    for (let j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
+
+    for(let j=0;j<=a.length;j++){
+
+        matrix[0][j]=j;
+
     }
 
-    for (let i = 1; i <= b.length; i++) {
 
-        for (let j = 1; j <= a.length; j++) {
 
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+    for(let i=1;i<=b.length;i++){
 
-                matrix[i][j] = matrix[i - 1][j - 1];
+        for(let j=1;j<=a.length;j++){
 
-            } else {
 
-                matrix[i][j] = Math.min(
+            if(
+                b.charAt(i-1)
+                ===
+                a.charAt(j-1)
+            ){
 
-                    matrix[i - 1][j] + 1,
+                matrix[i][j]=
+                matrix[i-1][j-1];
 
-                    matrix[i][j - 1] + 1,
+            }
 
-                    matrix[i - 1][j - 1] + 1
+            else{
+
+
+                matrix[i][j]=Math.min(
+
+                    matrix[i-1][j-1]+1,
+
+                    matrix[i][j-1]+1,
+
+                    matrix[i-1][j]+1
 
                 );
 
@@ -66,77 +97,199 @@ function levenshtein(a, b) {
 
     }
 
+
     return matrix[b.length][a.length];
 
 }
 
-/*
-    Score de pertinence
-*/
 
-function getScore(query, song) {
 
-    query = normalizeText(query);
 
-    const title = normalizeText(song.title);
 
-    const artist = normalizeText(song.artist);
+/* =====================================================
+   SCORE DE PERTINENCE
+===================================================== */
 
-    // Correspondance parfaite
 
-    if (title === query) return 1000;
+function searchScore(song, query){
 
-    if (artist === query) return 950;
 
-    // Début du titre
+    const q =
+    normalizeSearch(query);
 
-    if (title.startsWith(query)) return 900;
 
-    // Début artiste
 
-    if (artist.startsWith(query)) return 850;
+    if(!q)
 
-    // Contient
+        return 0;
 
-    if (title.includes(query)) return 800;
 
-    if (artist.includes(query)) return 750;
 
-    // Recherche approximative
+    const title =
+    normalizeSearch(song.title);
 
-    const d1 = levenshtein(query, title);
 
-    const d2 = levenshtein(query, artist);
 
-    const best = Math.min(d1, d2);
+    const artist =
+    normalizeSearch(song.artist);
 
-    return Math.max(0, 500 - best * 50);
+
+
+    let score=0;
+
+
+
+    // correspondance exacte titre
+
+    if(title===q)
+
+        score+=100;
+
+
+
+    // début du titre
+
+    if(title.startsWith(q))
+
+        score+=60;
+
+
+
+    // mot présent dans titre
+
+    if(title.includes(q))
+
+        score+=40;
+
+
+
+    // artiste
+
+    if(artist===q)
+
+        score+=80;
+
+
+
+    if(artist.includes(q))
+
+        score+=30;
+
+
+
+
+    /*
+       Recherche approximative
+
+       Exemple :
+
+       beatl
+
+       Beatles
+    */
+
+
+    if(CONFIG.search.fuzzySearch){
+
+
+        const words =
+
+        title.split(" ");
+
+
+
+        words.forEach(word=>{
+
+
+            const distance=
+
+            levenshtein(
+                q,
+                word
+            );
+
+
+            if(distance<=2){
+
+                score+=25;
+
+            }
+
+
+        });
+
+
+    }
+
+
+
+    return score;
 
 }
 
-/*
-    Trie les résultats
-*/
 
-function searchSongs(list, query) {
 
-    if (!query || query.trim() === "")
-        return list;
+
+
+/* =====================================================
+   RECHERCHE PRINCIPALE
+===================================================== */
+
+
+function intelligentSearch(list, query){
+
+
+    const search =
+    normalizeSearch(query);
+
+
+
+    if(
+        !search ||
+        search.length <
+        CONFIG.search.minimumCharacters
+    ){
+
+        return [...list];
+
+    }
+
+
 
     return list
 
-        .map(song => ({
+        .map(song=>({
 
-            song,
+            song:song,
 
-            score: getScore(query, song)
+            score:
+            searchScore(
+                song,
+                search
+            )
 
         }))
 
-        .filter(item => item.score > 0)
 
-        .sort((a, b) => b.score - a.score)
+        .filter(item=>
 
-        .map(item => item.song);
+            item.score>0
+
+        )
+
+
+        .sort((a,b)=>
+
+            b.score-a.score
+
+        )
+
+
+        .map(item=>
+
+            item.song
+
+        );
+
 
 }
