@@ -1,160 +1,181 @@
-/* ======================================================
-   ALEX CARIBOU KARAOKE V2
-   ====================================================== */
+/* =====================================================
+   Alex caribou Karaoke V2.1
+   style.css
+===================================================== */
+
 
 *{
-    margin:0;
-    padding:0;
     box-sizing:border-box;
 }
 
+
 body{
 
-    background:#111111;
+    margin:0;
+
+    font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+    background:#111827;
 
     color:white;
 
-    font-family:'Poppins',sans-serif;
-
 }
 
-/***********************
-HEADER
-************************/
 
-header{
+
+/* =========================
+   HEADER
+========================= */
+
+
+.header{
 
     text-align:center;
 
-    padding:40px 20px;
+    padding:30px 20px;
 
-    background:#181818;
-
-    box-shadow:0 4px 12px rgba(0,0,0,.4);
-
-}
-
-header h1{
-
-    font-size:42px;
-
-    font-weight:700;
-
-    color:#ff2f55;
+    background:
+    linear-gradient(
+        135deg,
+        #ff2f55,
+        #7c3aed
+    );
 
 }
 
-header p{
 
-    margin-top:8px;
+.header h1{
 
-    color:#bbbbbb;
+    margin:0;
+
+    font-size:2.4rem;
 
 }
 
-/***********************
-MAIN
-************************/
+
+.header p{
+
+    margin-top:10px;
+
+    opacity:.9;
+
+}
+
+
+
+/* =========================
+   ZONE PRINCIPALE
+========================= */
+
 
 main{
-
-    width:95%;
 
     max-width:1400px;
 
     margin:auto;
 
-    padding:30px 0;
+    padding:20px;
 
 }
 
-/***********************
-SEARCH
-************************/
 
-.searchBar{
+
+/* =========================
+   RECHERCHE
+========================= */
+
+
+.search-zone{
+
+    background:#1f2937;
+
+    padding:20px;
+
+    border-radius:18px;
 
     margin-bottom:20px;
 
 }
+
+
 
 #search{
 
     width:100%;
 
-    padding:18px;
+    padding:15px;
+
+    font-size:1.1rem;
 
     border-radius:12px;
 
     border:none;
 
-    background:#202020;
-
-    color:white;
-
-    font-size:18px;
-
-}
-
-#search:focus{
-
     outline:none;
 
-    background:#292929;
+    margin-bottom:15px;
 
 }
 
-/***********************
-FILTERS
-************************/
+
+
+/* =========================
+   FILTRES
+========================= */
+
 
 .filters{
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    grid-template-columns:
+    repeat(auto-fit,minmax(200px,1fr));
 
-    gap:15px;
-
-    margin-bottom:20px;
+    gap:12px;
 
 }
 
-.filters select{
 
-    background:#202020;
 
-    color:white;
+select{
 
-    border:none;
-
-    padding:15px;
+    padding:12px;
 
     border-radius:10px;
 
-    cursor:pointer;
+    border:none;
 
-    font-size:16px;
+    background:#374151;
+
+    color:white;
+
+    font-size:1rem;
 
 }
 
-/***********************
-OPTIONS
-************************/
+
+
+/* =========================
+   OPTIONS
+========================= */
+
 
 .options{
 
     display:flex;
 
-    gap:30px;
+    gap:25px;
+
+    margin-top:15px;
 
     flex-wrap:wrap;
 
-    margin-bottom:25px;
-
-    color:#dddddd;
-
 }
+
+
 
 .options label{
 
@@ -162,107 +183,148 @@ OPTIONS
 
 }
 
-/***********************
-COMPTEUR
-************************/
 
-#songCount{
+
+/* =========================
+   TOOLBAR
+========================= */
+
+
+.toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
 
     margin-bottom:20px;
 
-    color:#aaaaaa;
-
-    font-size:15px;
+    flex-wrap:wrap;
 
 }
 
-/***********************
-SONGS
-************************/
 
-.songs{
+
+/* =========================
+   CARTES CHANSONS
+========================= */
+
+
+.songs-grid{
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    grid-template-columns:
+    repeat(auto-fill,minmax(260px,1fr));
 
-    gap:20px;
+    gap:18px;
 
 }
 
-/***********************
-CARTE
-************************/
 
-.song{
 
-    background:#1d1d1d;
+.song-card{
 
-    border-radius:16px;
+    background:#1f2937;
 
-    padding:22px;
+    border-radius:18px;
+
+    padding:20px;
 
     transition:.25s;
 
-    border:1px solid #2d2d2d;
+    border:1px solid transparent;
 
 }
 
-.song:hover{
 
-    transform:translateY(-4px);
+
+.song-card:hover{
+
+    transform:translateY(-5px);
 
     border-color:#ff2f55;
 
-    box-shadow:0 8px 25px rgba(255,47,85,.25);
+}
+
+
+
+.song-card h2{
+
+    margin-top:0;
+
+    color:#ff7a95;
+
+    font-size:1.3rem;
 
 }
 
-.song h2{
 
-    color:white;
-
-    font-size:22px;
-
-    margin-bottom:10px;
-
-}
 
 .artist{
 
-    color:#ff2f55;
-
-    font-weight:600;
+    font-size:1.05rem;
 
     margin-bottom:15px;
 
 }
 
-.info{
 
-    display:flex;
 
-    flex-wrap:wrap;
+/* =========================
+   BADGES
+========================= */
 
-    gap:10px;
-
-}
 
 .badge{
 
-    background:#292929;
+    display:inline-block;
 
-    border-radius:30px;
+    background:#374151;
 
-    padding:7px 14px;
+    padding:6px 10px;
 
-    font-size:13px;
+    border-radius:20px;
+
+    margin:3px;
+
+    font-size:.85rem;
 
 }
 
-/***********************
-PAGINATION
-************************/
+
+
+/* =========================
+   FAVORIS
+========================= */
+
+
+.favorite{
+
+    float:right;
+
+    cursor:pointer;
+
+    font-size:1.5rem;
+
+}
+
+
+.favorite.active{
+
+    color:#ff2f55;
+
+}
+
+
+
+/* =========================
+   PAGINATION
+========================= */
+
 
 .pagination{
 
@@ -272,29 +334,31 @@ PAGINATION
 
     flex-wrap:wrap;
 
-    gap:10px;
+    gap:8px;
 
-    margin-top:35px;
+    margin:30px 0;
 
 }
 
+
+
 .pagination button{
 
-    background:#202020;
+    background:#374151;
 
     color:white;
 
     border:none;
 
-    padding:10px 18px;
+    padding:10px 14px;
 
-    border-radius:8px;
+    border-radius:10px;
 
     cursor:pointer;
 
-    transition:.2s;
-
 }
+
+
 
 .pagination button:hover{
 
@@ -302,56 +366,71 @@ PAGINATION
 
 }
 
-/***********************
-FOOTER
-************************/
+
+
+.pagination .active{
+
+    background:#ff2f55;
+
+}
+
+
+
+/* =========================
+   FOOTER
+========================= */
+
 
 footer{
 
     text-align:center;
 
-    padding:35px;
+    padding:20px;
 
-    color:#777777;
-
-}
-
-/***********************
-MOBILE
-************************/
-
-@media(max-width:700px){
-
-header h1{
-
-font-size:32px;
+    opacity:.7;
 
 }
 
-.song{
 
-padding:18px;
 
-}
 
-.song h2{
 
-font-size:20px;
+/* =========================
+   MOBILE
+========================= */
 
-}
 
-.filters{
+@media(max-width:600px){
 
-grid-template-columns:1fr;
 
-}
+    .header h1{
 
-.options{
+        font-size:1.8rem;
 
-flex-direction:column;
+    }
 
-gap:10px;
 
-}
+    main{
+
+        padding:10px;
+
+    }
+
+
+    .songs-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .toolbar{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
 
 }
