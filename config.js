@@ -14,7 +14,7 @@ const CONFIG = {
     ========================= */
 
 
-    appName: "Alex Karaoke V2.1",
+    appName: "Alex CARIBOU Karaoke V2.1",
 
 
     version: "2.1",
@@ -44,6 +44,7 @@ const CONFIG = {
     allowedLanguages: [
 
         "Français",
+       "French",
 
         "Anglais",
        "Espagnol",
