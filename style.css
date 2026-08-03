@@ -1,1 +1,357 @@
-body{font-family:Arial;margin:20px}input{width:100%;padding:10px}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd}
+/* ======================================================
+   ALEX CARIBOU KARAOKE V2
+   ====================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    background:#111111;
+
+    color:white;
+
+    font-family:'Poppins',sans-serif;
+
+}
+
+/***********************
+HEADER
+************************/
+
+header{
+
+    text-align:center;
+
+    padding:40px 20px;
+
+    background:#181818;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.4);
+
+}
+
+header h1{
+
+    font-size:42px;
+
+    font-weight:700;
+
+    color:#ff2f55;
+
+}
+
+header p{
+
+    margin-top:8px;
+
+    color:#bbbbbb;
+
+}
+
+/***********************
+MAIN
+************************/
+
+main{
+
+    width:95%;
+
+    max-width:1400px;
+
+    margin:auto;
+
+    padding:30px 0;
+
+}
+
+/***********************
+SEARCH
+************************/
+
+.searchBar{
+
+    margin-bottom:20px;
+
+}
+
+#search{
+
+    width:100%;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    border:none;
+
+    background:#202020;
+
+    color:white;
+
+    font-size:18px;
+
+}
+
+#search:focus{
+
+    outline:none;
+
+    background:#292929;
+
+}
+
+/***********************
+FILTERS
+************************/
+
+.filters{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:15px;
+
+    margin-bottom:20px;
+
+}
+
+.filters select{
+
+    background:#202020;
+
+    color:white;
+
+    border:none;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+}
+
+/***********************
+OPTIONS
+************************/
+
+.options{
+
+    display:flex;
+
+    gap:30px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:25px;
+
+    color:#dddddd;
+
+}
+
+.options label{
+
+    cursor:pointer;
+
+}
+
+/***********************
+COMPTEUR
+************************/
+
+#songCount{
+
+    margin-bottom:20px;
+
+    color:#aaaaaa;
+
+    font-size:15px;
+
+}
+
+/***********************
+SONGS
+************************/
+
+.songs{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+
+    gap:20px;
+
+}
+
+/***********************
+CARTE
+************************/
+
+.song{
+
+    background:#1d1d1d;
+
+    border-radius:16px;
+
+    padding:22px;
+
+    transition:.25s;
+
+    border:1px solid #2d2d2d;
+
+}
+
+.song:hover{
+
+    transform:translateY(-4px);
+
+    border-color:#ff2f55;
+
+    box-shadow:0 8px 25px rgba(255,47,85,.25);
+
+}
+
+.song h2{
+
+    color:white;
+
+    font-size:22px;
+
+    margin-bottom:10px;
+
+}
+
+.artist{
+
+    color:#ff2f55;
+
+    font-weight:600;
+
+    margin-bottom:15px;
+
+}
+
+.info{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+}
+
+.badge{
+
+    background:#292929;
+
+    border-radius:30px;
+
+    padding:7px 14px;
+
+    font-size:13px;
+
+}
+
+/***********************
+PAGINATION
+************************/
+
+.pagination{
+
+    display:flex;
+
+    justify-content:center;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-top:35px;
+
+}
+
+.pagination button{
+
+    background:#202020;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.pagination button:hover{
+
+    background:#ff2f55;
+
+}
+
+/***********************
+FOOTER
+************************/
+
+footer{
+
+    text-align:center;
+
+    padding:35px;
+
+    color:#777777;
+
+}
+
+/***********************
+MOBILE
+************************/
+
+@media(max-width:700px){
+
+header h1{
+
+font-size:32px;
+
+}
+
+.song{
+
+padding:18px;
+
+}
+
+.song h2{
+
+font-size:20px;
+
+}
+
+.filters{
+
+grid-template-columns:1fr;
+
+}
+
+.options{
+
+flex-direction:column;
+
+gap:10px;
+
+}
+
+}
