@@ -1,98 +1,202 @@
-// =======================================
-// Alex Caribou Karaoke V2
-// app.js
-// =======================================
+/* =====================================================
+   Alex Karaoke V2.1
+   app.js
+===================================================== */
 
-const ITEMS_PER_PAGE = 24;
+"use strict";
 
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let allSongs = [];
 let filteredSongs = [];
+
 let currentPage = 1;
 
-// langues à masquer
-const hiddenLanguages = [
-    "Arabic",
-    "Romanian",
-    "Turkish",
-    "Finnish"
-];
+const favorites = new Set(
+    JSON.parse(localStorage.getItem("favorites") || "[]")
+);
 
-// éléments HTML
-const searchInput = document.getElementById("search");
-const songsContainer = document.getElementById("songs");
-const languageFilter = document.getElementById("languageFilter");
-const styleFilter = document.getElementById("styleFilter");
-const artistFilter = document.getElementById("artistFilter");
-const duoOnly = document.getElementById("duoOnly");
-const hideExplicit = document.getElementById("hideExplicit");
-const pagination = document.getElementById("pagination");
-const songCount = document.getElementById("songCount");
+/* =====================================================
+   ELEMENTS HTML
+===================================================== */
 
-// -----------------------------
+const searchInput      = document.getElementById("search");
+const languageFilter   = document.getElementById("languageFilter");
+const styleFilter      = document.getElementById("styleFilter");
+const artistFilter     = document.getElementById("artistFilter");
+
+const duoOnly          = document.getElementById("duoOnly");
+const hideExplicit     = document.getElementById("hideExplicit");
+
+const songsContainer   = document.getElementById("songs");
+const pagination       = document.getElementById("pagination");
+const songCount        = document.getElementById("songCount");
+
+/* =====================================================
+   CONFIGURATION
+===================================================== */
+
+const ITEMS_PER_PAGE = CONFIG.songsPerPage;
+
+/* =====================================================
+   DRAPEAUX
+===================================================== */
+
+function getFlag(language){
+
+    return CONFIG.flags[language] || "🌍";
+
+}
+
+/* =====================================================
+   NORMALISATION
+===================================================== */
 
 function normalize(text){
 
     if(!text) return "";
 
     return text
+
         .toLowerCase()
+
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"");
+
+        .replace(/[\u0300-\u036f]/g,"")
+
+        .trim();
 
 }
 
-// -----------------------------
+/* =====================================================
+   FAVORIS
+===================================================== */
+
+function isFavorite(song){
+
+    return favorites.has(
+
+        song.artist + "|" + song.title
+
+    );
+
+}
+
+function toggleFavorite(song){
+
+    const id = song.artist + "|" + song.title;
+
+    if(favorites.has(id))
+
+        favorites.delete(id);
+
+    else
+
+        favorites.add(id);
+
+    localStorage.setItem(
+
+        "favorites",
+
+        JSON.stringify([...favorites])
+
+    );
+
+}
+
+/* =====================================================
+   INITIALISATION
+===================================================== */
+
+function init(){
+
+    document.title = CONFIG.appName;
+
+    allSongs = songs.filter(song=>{
+
+        return CONFIG.allowedLanguages.includes(
+
+            song.language
+
+        );
+
+    });
+
+    filteredSongs = [...allSongs];
+
+    populateFilters();
+
+    render();
+
+}
+
+/* =====================================================
+   LISTES UNIQUES
+===================================================== */
 
 function unique(field){
 
-    let values=[...new Set(
-        songs
+    return [...new Set(
+
+        allSongs
+
         .map(s=>s[field])
-        .filter(v=>v)
-    )];
 
-    values.sort();
+        .filter(Boolean)
 
-    return values;
+    )]
+
+    .sort();
 
 }
 
-// -----------------------------
+/* =====================================================
+   REMPLISSAGE DES FILTRES
+===================================================== */
 
 function populateFilters(){
 
     unique("language")
-    .filter(lang=>!hiddenLanguages.includes(lang))
+
     .forEach(lang=>{
 
-        let option=document.createElement("option");
+        const option = document.createElement("option");
 
-        option.value=lang;
+        option.value = lang;
 
-        option.textContent=lang;
+        option.textContent =
+
+            getFlag(lang) + " " + lang;
 
         languageFilter.appendChild(option);
 
     });
 
-    unique("style").forEach(style=>{
+    unique("style")
 
-        let option=document.createElement("option");
+    .forEach(style=>{
 
-        option.value=style;
+        const option = document.createElement("option");
 
-        option.textContent=style;
+        option.value = style;
+
+        option.textContent = style;
 
         styleFilter.appendChild(option);
 
     });
 
-    unique("artist").forEach(artist=>{
+    unique("artist")
 
-        let option=document.createElement("option");
+    .forEach(artist=>{
 
-        option.value=artist;
+        const option = document.createElement("option");
 
-        option.textContent=artist;
+        option.value = artist;
+
+        option.textContent = artist;
 
         artistFilter.appendChild(option);
 
@@ -100,201 +204,24 @@ function populateFilters(){
 
 }
 
-// -----------------------------
+/* =====================================================
+   EVENEMENTS
+===================================================== */
 
-function filterSongs(){
+searchInput.addEventListener("input",applyFilters);
 
-    const search=normalize(searchInput.value);
+languageFilter.addEventListener("change",applyFilters);
 
-    filteredSongs=songs.filter(song=>{
+styleFilter.addEventListener("change",applyFilters);
 
-        if(hiddenLanguages.includes(song.language))
-            return false;
+artistFilter.addEventListener("change",applyFilters);
 
-        if(hideExplicit.checked && song.explicit)
-            return false;
+duoOnly.addEventListener("change",applyFilters);
 
-        if(duoOnly.checked && !song.duo)
-            return false;
+hideExplicit.addEventListener("change",applyFilters);
 
-        if(languageFilter.value &&
-            song.language!==languageFilter.value)
-            return false;
+/* =====================================================
+   LANCEMENT
+===================================================== */
 
-        if(styleFilter.value &&
-            song.style!==styleFilter.value)
-            return false;
-
-        if(artistFilter.value &&
-            song.artist!==artistFilter.value)
-            return false;
-
-        const title=normalize(song.title);
-
-        const artist=normalize(song.artist);
-
-        return(
-            title.includes(search) ||
-            artist.includes(search)
-        );
-
-    });
-
-    currentPage=1;
-
-    render();
-
-}
-
-// -----------------------------
-
-function render(){
-
-    songsContainer.innerHTML="";
-
-    songCount.textContent=
-        filteredSongs.length+" chanson(s)";
-
-    const start=(currentPage-1)*ITEMS_PER_PAGE;
-
-    const end=start+ITEMS_PER_PAGE;
-
-    const pageSongs=
-        filteredSongs.slice(start,end);
-
-    pageSongs.forEach(song=>{
-
-        const card=document.createElement("div");
-
-        card.className="song";
-
-        card.innerHTML=`
-
-            <h2>${song.title}</h2>
-
-            <div class="artist">
-
-                👤 ${song.artist}
-
-            </div>
-
-            <div class="info">
-
-                <span class="badge">
-                🌍 ${song.language}
-                </span>
-
-                <span class="badge">
-                🎵 ${song.style}
-                </span>
-
-                <span class="badge">
-                📅 ${song.year}
-                </span>
-
-                ${
-                    song.duo
-                    ?
-                    '<span class="badge">👥 Duo</span>'
-                    :
-                    ''
-                }
-
-            </div>
-
-        `;
-
-        songsContainer.appendChild(card);
-
-    });
-
-    renderPagination();
-
-}
-
-// -----------------------------
-
-function renderPagination(){
-
-    pagination.innerHTML="";
-
-    const pages=
-    Math.ceil(
-        filteredSongs.length/
-        ITEMS_PER_PAGE
-    );
-
-    for(let i=1;i<=pages;i++){
-
-        const button=
-        document.createElement("button");
-
-        button.textContent=i;
-
-        if(i===currentPage){
-
-            button.style.background="#ff2f55";
-
-        }
-
-        button.onclick=()=>{
-
-            currentPage=i;
-
-            render();
-
-            window.scrollTo({
-
-                top:0,
-
-                behavior:"smooth"
-
-            });
-
-        };
-
-        pagination.appendChild(button);
-
-    }
-
-}
-
-// -----------------------------
-
-searchInput.addEventListener(
-    "input",
-    filterSongs
-);
-
-languageFilter.addEventListener(
-    "change",
-    filterSongs
-);
-
-styleFilter.addEventListener(
-    "change",
-    filterSongs
-);
-
-artistFilter.addEventListener(
-    "change",
-    filterSongs
-);
-
-duoOnly.addEventListener(
-    "change",
-    filterSongs
-);
-
-hideExplicit.addEventListener(
-    "change",
-    filterSongs
-);
-
-// -----------------------------
-
-populateFilters();
-
-filteredSongs=songs;
-
-render();
+init();
