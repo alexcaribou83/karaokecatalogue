@@ -45,12 +45,9 @@ const CONFIG = {
 
         "Français",
 
-        "French",
-
-        "English",
-
         "Anglais",
-
+       "Espagnol",
+         
         "Español",
 
         "Spanish",
@@ -58,6 +55,8 @@ const CONFIG = {
         "Italiano",
 
         "Italian",
+       "Italien",
+       "Allemand",
 
         "Deutsch",
 
@@ -66,14 +65,18 @@ const CONFIG = {
         "日本語",
 
         "Japanese",
+       "Japonais",
 
         "한국어",
 
         "Korean",
+       "Coréen",
 
         "中文",
+       "Chinois",
 
-        "Chinese"
+        "Chinese",
+       "portugais"
 
     ],
 
