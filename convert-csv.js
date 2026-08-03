@@ -132,16 +132,23 @@ const songs = rows.map((song,index)=>{
             ),
 
 
-        category:
-            clean(
-                song.Style ||
-                song.Category ||
-                ""
-            ),
+category:
+    clean(
+        song.Style ||
+        song.Category ||
+        ""
+    ),
 
 
-        favorite:false
+duo:
+    (
+        song.Duo === "1" ||
+        song.DUO === "1" ||
+        song.duo === "1"
+    ),
 
+
+favorite:false
     };
 
 
