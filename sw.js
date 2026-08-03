@@ -5,7 +5,7 @@
 
 "use strict";
 
-const CACHE_NAME = "alex-karaoke-v2.1.0";
+const CACHE_NAME = "alex-CARIBOU-karaoke-v2.1.0";
 
 const APP_FILES = [
     "./",
