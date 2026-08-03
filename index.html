@@ -1,1 +1,148 @@
-<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="style.css"><h2>Catalogue Karaoké</h2><input id="q" placeholder="Rechercher"><table><thead><tr><th>Titre</th><th>Artiste</th><th>Langue</th><th>Style</th></tr></thead><tbody id="list"></tbody></table><script src="songs.js"></script><script src="app.js"></script>
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Alex Karaoke</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🎤 Alex Caribou Karaoke</h1>
+
+<p>
+Recherchez votre prochaine chanson
+</p>
+
+</header>
+
+<main>
+
+<section class="searchBar">
+
+<input
+
+type="text"
+
+id="search"
+
+placeholder="🔍 Rechercher un titre ou un artiste..."
+
+autocomplete="off"
+
+>
+
+</section>
+
+<section class="filters">
+
+<select id="languageFilter">
+
+<option value="">🌍 Toutes les langues</option>
+
+</select>
+
+<select id="styleFilter">
+
+<option value="">🎵 Tous les styles</option>
+
+</select>
+
+<select id="artistFilter">
+
+<option value="">👤 Tous les artistes</option>
+
+</select>
+
+</section>
+
+<section class="options">
+
+<label>
+
+<input
+
+type="checkbox"
+
+id="duoOnly"
+
+>
+
+Duos uniquement
+
+</label>
+
+<label>
+
+<input
+
+type="checkbox"
+
+id="hideExplicit"
+
+checked
+
+>
+
+Masquer les chansons explicites
+
+</label>
+
+</section>
+
+<div id="songCount">
+
+Chargement...
+
+</div>
+
+<section
+
+id="songs"
+
+class="songs">
+
+</section>
+
+<div
+
+id="pagination"
+
+class="pagination">
+
+</div>
+
+</main>
+
+<footer>
+
+Alex Caribou Karaoke © 2026
+
+</footer>
+
+<script src="songs.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
