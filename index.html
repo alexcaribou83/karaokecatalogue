@@ -5,143 +5,250 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Alex Caribou Karaoke</title>
+<title>Alex Karaoke V2.1</title>
+
+<meta name="description" content="Catalogue karaoké Alex Karaoke">
 
 <link rel="stylesheet" href="style.css">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="manifest" href="manifest.json">
 
-<link rel="preconnect"
-href="https://fonts.gstatic.com"
-crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
+<meta name="theme-color" content="#ff2f55">
 
 </head>
 
+
 <body>
 
-<header>
 
-<h1>🎤 Alex Caribou Karaoke</h1>
+<header class="header">
 
-<p>
-Recherchez votre prochaine chanson
-</p>
+    <h1>
+        🎤 Alex Karaoke
+    </h1>
+
+    <p>
+        Catalogue karaoké V2.1
+    </p>
 
 </header>
 
+
+
 <main>
 
-<section class="searchBar">
 
-<input
+<section class="search-zone">
 
-type="text"
 
-id="search"
-
-placeholder="🔍 Rechercher un titre ou un artiste..."
-
-autocomplete="off"
-
+<input 
+    id="search"
+    type="search"
+    placeholder="🔍 Rechercher un titre ou un artiste..."
 >
 
-</section>
 
-<section class="filters">
+
+<div class="filters">
+
 
 <select id="languageFilter">
 
-<option value="">🌍 Toutes les langues</option>
+<option value="">
+🌍 Toutes les langues
+</option>
 
 </select>
+
+
 
 <select id="styleFilter">
 
-<option value="">🎵 Tous les styles</option>
+<option value="">
+🎵 Tous les styles
+</option>
 
 </select>
+
+
 
 <select id="artistFilter">
 
-<option value="">👤 Tous les artistes</option>
+<option value="">
+👤 Tous les artistes
+</option>
 
 </select>
 
-</section>
 
-<section class="options">
+
+</div>
+
+
+
+<div class="options">
+
 
 <label>
 
-<input
-
+<input 
 type="checkbox"
-
 id="duoOnly"
-
 >
 
-Duos uniquement
+👥 Duos uniquement
 
 </label>
+
+
 
 <label>
 
-<input
-
+<input 
 type="checkbox"
-
 id="hideExplicit"
-
-checked
-
 >
 
-Masquer les chansons explicites
+🚫 Masquer explicite
 
 </label>
 
+
+</div>
+
+
+
 </section>
+
+
+
+
+
+<section class="toolbar">
+
 
 <div id="songCount">
 
-Chargement...
+0 chanson
 
 </div>
 
-<section
 
-id="songs"
 
-class="songs">
+<select id="sortSelect">
+
+
+<option value="titleAsc">
+
+A → Z
+
+</option>
+
+
+<option value="titleDesc">
+
+Z → A
+
+</option>
+
+
+<option value="artist">
+
+Artiste
+
+</option>
+
+
+<option value="yearAsc">
+
+Année croissante
+
+</option>
+
+
+<option value="yearDesc">
+
+Année décroissante
+
+</option>
+
+
+</select>
+
 
 </section>
 
-<div
 
-id="pagination"
 
-class="pagination">
 
-</div>
+
+<section id="songs" class="songs-grid">
+
+
+<!-- Les chansons seront générées ici -->
+
+
+</section>
+
+
+
+
+
+<nav id="pagination" class="pagination">
+
+
+</nav>
+
+
 
 </main>
 
+
+
+
+
+
 <footer>
 
-Alex Caribou Karaoke © 2026
+
+<p>
+© Alex Karaoke V2.1
+</p>
+
 
 </footer>
+
+
+
+
+
 <script src="config.js"></script>
+
 <script src="songs.js"></script>
 
+<script src="search.js"></script>
+
 <script src="app.js"></script>
+
+
+
+<script>
+
+
+// Installation PWA
+
+if("serviceWorker" in navigator){
+
+    navigator.serviceWorker.register("sw.js");
+
+}
+
+
+</script>
+
+
 
 </body>
 
