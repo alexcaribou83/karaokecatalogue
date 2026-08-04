@@ -110,9 +110,9 @@ function computeScore(query,song){
 
     if(artist.includes(query)) score+=450;
 
-    if(song.style){
+    if(song.Styles){
 
-        if(normalizeText(song.style).includes(query))
+        if(normalizeText(song.Styles).includes(query))
 
             score+=200;
 
