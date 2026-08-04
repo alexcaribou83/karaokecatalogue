@@ -201,7 +201,8 @@ const CONFIG = {
 
         "Classique",
 
-        "Chanson française"
+        "Chanson française",
+     "french",
 
 
     ],
