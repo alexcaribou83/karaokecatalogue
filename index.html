@@ -3,226 +3,171 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Alex CARIBOU Karaoke V2.1</title>
+    <title>Alex CARIBOU Karaoké</title>
 
-<meta name="description" content="Catalogue karaoké Alex Caribou Karaoke">
+    <meta name="theme-color" content="#151515">
 
-<link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
 
-<link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
 
-<meta name="theme-color" content="#ff2f55">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 </head>
 
-
 <body>
 
+<header class="topbar">
 
-<header class="header">
+    <div class="title">
 
-    <h1>
-        🎤 Alex CARIBOU Karaoke
-    </h1>
+        <h1>🎤 Alex CARIBOU Karaoké</h1>
 
-    <p>
-        Catalogue karaoké V2.1
-    </p>
+        <p id="songCount">Chargement du catalogue...</p>
+
+    </div>
 
 </header>
 
+<main class="container">
 
+    <!-- Recherche -->
 
-<main>
+    <section class="search-section">
 
+        <input
+            id="search"
+            type="text"
+            placeholder="🔍 Rechercher un titre ou un artiste..."
+            autocomplete="off">
 
-<section class="search-zone">
+    </section>
 
+    <!-- Filtres -->
 
-<input 
-    id="search"
-    type="search"
-    placeholder="🔍 Rechercher un titre ou un artiste..."
->
+    <section class="filters">
 
+        <select id="languageFilter">
 
+            <option value="">🌍 Toutes les langues</option>
 
-<div class="filters">
+        </select>
 
+        <select id="styleFilter">
 
-<select id="languageFilter">
+            <option value="">🎵 Tous les styles</option>
 
-<option value="">
-🌍 Toutes les langues
-</option>
+        </select>
 
-</select>
+        <select id="artistFilter">
 
+            <option value="">👤 Tous les artistes</option>
 
+        </select>
 
-<select id="styleFilter">
+        <select id="sortSelect">
 
-<option value="">
-🎵 Tous les styles
-</option>
+            <option value="titleAsc">Titre A → Z</option>
 
-</select>
+            <option value="titleDesc">Titre Z → A</option>
 
+            <option value="artistAsc">Artiste A → Z</option>
 
+            <option value="artistDesc">Artiste Z → A</option>
 
-<select id="artistFilter">
+            <option value="yearDesc">Année ↓</option>
 
-<option value="">
-👤 Tous les artistes
-</option>
+            <option value="yearAsc">Année ↑</option>
 
-</select>
+        </select>
 
+    </section>
 
+    <!-- Options -->
 
-</div>
+    <section class="options">
 
+        <label>
 
+            <input type="checkbox" id="duoOnly">
 
-<div class="options">
+            👥 Duo uniquement
 
+        </label>
 
-<label>
+        <label>
 
-<input 
-type="checkbox"
-id="duoOnly"
->
+            <input type="checkbox" id="hideExplicit" checked>
 
-👥 Duos uniquement
+            🚫 Masquer Explicit
 
-</label>
+        </label>
 
+        <label>
 
+            <input type="checkbox" id="favoritesOnly">
 
-<label>
+            ❤️ Favoris
 
-<input 
-type="checkbox"
-id="hideExplicit"
->
+        </label>
 
-🚫 Masquer explicite
+    </section>
 
-</label>
+    <!-- Suggestions de recherche -->
 
+    <div id="suggestions" class="suggestions"></div>
 
-</div>
+    <!-- Cartes chansons -->
 
+    <section id="songs" class="songs-grid">
 
+    </section>
 
-</section>
+    <!-- Pagination -->
 
+    <section class="pagination">
 
+        <button id="prevPage">
 
+            ◀
 
+        </button>
 
-<section class="toolbar">
+        <span id="pageNumber">
 
+            Page 1
 
-<div id="songCount">
+        </span>
 
-0 chanson
+        <button id="nextPage">
 
-</div>
+            ▶
 
+        </button>
 
-
-<select id="sortSelect">
-
-
-<option value="titleAsc">
-
-A → Z
-
-</option>
-
-
-<option value="titleDesc">
-
-Z → A
-
-</option>
-
-
-<option value="artist">
-
-Artiste
-
-</option>
-
-
-<option value="yearAsc">
-
-Année croissante
-
-</option>
-
-
-<option value="yearDesc">
-
-Année décroissante
-
-</option>
-
-
-</select>
-
-
-</section>
-
-
-
-
-
-<section id="songs" class="songs-grid">
-
-
-<!-- Les chansons seront générées ici -->
-
-
-</section>
-
-
-
-
-
-<nav id="pagination" class="pagination">
-
-
-</nav>
-
-
+    </section>
 
 </main>
 
-
-
-
-
-
 <footer>
 
+    <p>
 
-<p>
-© Alex Caribou Karaoke V2.1
-</p>
+        Alex CARIBOU Karaoké • Version 2.1
 
+    </p>
 
 </footer>
 
-
-
-
+<!-- Chargement des données -->
 
 <script src="config.js"></script>
 
@@ -231,24 +176,6 @@ Année décroissante
 <script src="search.js"></script>
 
 <script src="app.js"></script>
-
-
-
-<script>
-
-
-// Installation PWA
-
-if("serviceWorker" in navigator){
-
-    navigator.serviceWorker.register("sw.js");
-
-}
-
-
-</script>
-
-
 
 </body>
 
