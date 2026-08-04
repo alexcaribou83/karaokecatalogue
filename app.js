@@ -1,50 +1,44 @@
 /*=====================================================
- Alex CARIBOU Karaoké V2.2
+ Alex CARIBOU Karaoké V3.0
  app.js
 
  PACK A
- Base application + catalogue + données
+ Base application + données
 ======================================================*/
 
 
 "use strict";
 
 
+
 /*
 =====================================================
- VARIABLES GLOBALES
+ VARIABLES PRINCIPALES
 =====================================================
 */
 
 
-let songsDatabase = [];
+let allSongs = [];
 
-let displayedSongs = [];
+let filteredSongs = [];
 
 let currentPage = 1;
 
 let totalPages = 1;
 
+
+const ITEMS_PER_PAGE = 50;
+
+
 let favorites = [];
 
-
-
-const APP_SETTINGS = {
-
-    songsPerPage: 50,
-
-    favoriteStorage:
-        "alex_caribou_favorites"
-
-};
 
 
 
 
 /*
 =====================================================
- CACHE DES ELEMENTS HTML
- Compatible index.html fourni
+ ELEMENTS HTML
 =====================================================
 */
 
@@ -52,62 +46,37 @@ const APP_SETTINGS = {
 const DOM = {
 
 
-    search:
-        null,
+    search:null,
 
+    suggestions:null,
 
-    songs:
-        null,
+    songs:null,
 
+    songCount:null,
 
-    songCount:
-        null,
+    languageFilter:null,
 
+    styleFilter:null,
 
-    languageFilter:
-        null,
+    artistFilter:null,
 
+    sortSelect:null,
 
-    StylesFilter:
-        null,
+    duoOnly:null,
 
+    hideExplicit:null,
 
-    artistFilter:
-        null,
+    favoritesOnly:null,
 
+    prevPage:null,
 
-    sortSelect:
-        null,
+    nextPage:null,
 
+    pageNumber:null
 
-    duoOnly:
-        null,
-
-
-    hideExplicit:
-        null,
-
-
-    favoritesOnly:
-        null,
-
-
-    suggestions:
-        null,
-
-
-    prevPage:
-        null,
-
-
-    nextPage:
-        null,
-
-
-    pageNumber:
-        null
 
 };
+
 
 
 
@@ -119,11 +88,15 @@ const DOM = {
 */
 
 
-function cacheDOM(){
+function initDOM(){
 
 
     DOM.search =
         document.getElementById("search");
+
+
+    DOM.suggestions =
+        document.getElementById("suggestions");
 
 
     DOM.songs =
@@ -138,8 +111,8 @@ function cacheDOM(){
         document.getElementById("languageFilter");
 
 
-    DOM.StylesFilter =
-        document.getElementById("StylesFilter");
+    DOM.styleFilter =
+        document.getElementById("styleFilter");
 
 
     DOM.artistFilter =
@@ -162,10 +135,6 @@ function cacheDOM(){
         document.getElementById("favoritesOnly");
 
 
-    DOM.suggestions =
-        document.getElementById("suggestions");
-
-
     DOM.prevPage =
         document.getElementById("prevPage");
 
@@ -183,6 +152,7 @@ function cacheDOM(){
 
 
 
+
 /*
 =====================================================
  NORMALISATION TEXTE
@@ -190,42 +160,15 @@ function cacheDOM(){
 */
 
 
-function cleanText(value){
+function normalizeText(text){
 
 
-    if(!value)
-
-        return "";
-
-
-    return value
-
-        .toString()
-
-        .trim();
-
-
-}
-
-
-
-
-/*
-=====================================================
- NORMALISATION RECHERCHE
-=====================================================
-*/
-
-
-function normalize(value){
-
-
-    if(!value)
+    if(!text)
 
         return "";
 
 
-    return value
+    return text
 
         .toString()
 
@@ -234,8 +177,11 @@ function normalize(value){
         .normalize("NFD")
 
         .replace(
+
             /[\u0300-\u036f]/g,
+
             ""
+
         )
 
         .trim();
@@ -243,108 +189,6 @@ function normalize(value){
 
 }
 
-
-
-
-/*
-=====================================================
- TRANSFORMATION VALEURS MULTIPLES CSV
-=====================================================
-*/
-
-function parseMultipleValues(value){
-
-
-    if(!value)
-
-        return [];
-
-
-
-    // Si le CSV a déjà créé un tableau
-
-    if(Array.isArray(value)){
-
-        return value
-
-            .map(item => item.trim())
-
-            .filter(item => item.length > 0);
-
-    }
-
-
-
-    return value
-
-        .toString()
-
-        .replace(/\r/g,"")
-
-        .replace(/\n/g,",")
-        
-        .replace(/\|/g,",")
-        
-        .replace(/;/g,",")
-        
-        .split(",")
-
-        .map(item => item.trim())
-
-        .filter(item => item.length > 0);
-
-
-}
-
-
-
-
-/*
-=====================================================
- CONVERSION BOOLEAN CSV
-=====================================================
-*/
-
-
-function parseBoolean(value){
-
-
-    if(value === true)
-
-        return true;
-
-
-
-    if(!value)
-
-        return false;
-
-
-
-    const test =
-
-        normalize(value);
-
-
-
-    return [
-
-        "1",
-
-        "true",
-
-        "yes",
-
-        "oui",
-
-        "x"
-
-    ]
-
-    .includes(test);
-
-
-}
 
 
 
@@ -359,41 +203,38 @@ function parseBoolean(value){
 function loadFavorites(){
 
 
-    try{
+    const saved =
 
+        localStorage.getItem(
 
-        const data =
+            "alex_caribou_favorites"
 
-            localStorage.getItem(
-
-                APP_SETTINGS.favoriteStorage
-
-            );
+        );
 
 
 
-        favorites =
-
-            data
-
-            ?
-
-            JSON.parse(data)
-
-            :
-
-            [];
+    if(saved){
 
 
-    }
-
-    catch(error){
+        try{
 
 
-        favorites = [];
+            favorites = JSON.parse(saved);
+
+
+        }
+
+        catch{
+
+
+            favorites = [];
+
+
+        }
 
 
     }
+
 
 
 }
@@ -414,10 +255,12 @@ function saveFavorites(){
 
     localStorage.setItem(
 
-        APP_SETTINGS.favoriteStorage,
+        "alex_caribou_favorites",
 
         JSON.stringify(
+
             favorites
+
         )
 
     );
@@ -428,9 +271,10 @@ function saveFavorites(){
 
 
 
+
 /*
 =====================================================
- FAVORIS
+ VERIFICATION FAVORI
 =====================================================
 */
 
@@ -446,19 +290,25 @@ function isFavorite(id){
 
 
 
+
+/*
+=====================================================
+ AJOUT / SUPPRESSION FAVORI
+=====================================================
+*/
+
+
 function toggleFavorite(id){
 
 
     if(isFavorite(id)){
 
 
-        favorites =
+        favorites = favorites.filter(
 
-            favorites.filter(
+            item => item !== id
 
-                fav => fav !== id
-
-            );
+        );
 
 
     }
@@ -472,7 +322,6 @@ function toggleFavorite(id){
     }
 
 
-
     saveFavorites();
 
 
@@ -481,143 +330,15 @@ function toggleFavorite(id){
 
 
 
+
 /*
 =====================================================
- PREPARATION D'UNE CHANSON
+ PREPARATION CATALOGUE
 =====================================================
 */
 
 
-function prepareSong(raw,index){
-
-
-    return {
-
-
-        id:
-
-            raw.id
-
-            ||
-
-            index + 1,
-
-
-
-        title:
-
-            cleanText(
-
-                raw.Title
-
-                ||
-
-                raw.title
-
-            ),
-
-
-
-        artist:
-
-            cleanText(
-
-                raw.Artist
-
-                ||
-
-                raw.artist
-
-            ),
-
-
-
-        languages:
-
-            parseMultipleValues(
-
-                raw.Languages
-
-                ||
-
-                raw.languages
-
-            ),
-
-
-
-       styles:
-
-    parseMultipleValues(
-
-        raw.Styles
-
-        ??
-
-        raw.styles
-
-    ),
-
-
-
-        year:
-
-            Number(
-
-                raw.Year
-
-                ||
-
-                raw.year
-
-                ||
-
-                0
-
-            ),
-
-
-
-        duo:
-
-            parseBoolean(
-
-                raw.Duo
-
-            ),
-
-
-
-        explicit:
-
-            parseBoolean(
-
-                raw.Explicit
-
-            )
-
-
-
-    };
-
-
-}
-
-
-
-
-
-/*
-=====================================================
- CHARGEMENT CATALOGUE
-=====================================================
-*/
-
-
-function loadCatalogue(){
-
-
-    loadFavorites();
+function prepareSongs(){
 
 
 
@@ -626,7 +347,7 @@ function loadCatalogue(){
 
         console.error(
 
-            "songs.js absent"
+            "songs.js introuvable"
 
         );
 
@@ -639,54 +360,75 @@ function loadCatalogue(){
 
 
 
-    songsDatabase =
-
-        songs.map(
-console.log(
-    "TEST STYLE",
-    songsDatabase[0].styles
-);
-            (song,index)=>
-
-                prepareSong(
-
-                    song,
-
-                    index
-
-                )
-
-        );
+    allSongs = songs.map(song => ({
 
 
+        id:
+
+            song.id,
 
 
-    displayedSongs =
+        title:
 
-        [
-
-            ...songsDatabase
-
-        ];
+            song.title || "",
 
 
+        artist:
 
-    updateCounter();
+            song.artist || "",
+
+
+        year:
+
+            song.year || 0,
+
+
+        language:
+
+            song.language || "",
+
+
+        category:
+
+            Array.isArray(song.category)
+
+            ?
+
+            song.category
+
+            :
+
+            [],
+
+
+        duo:
+
+            song.duo === true,
+
+
+        explicit:
+
+            song.explicit === true,
+
+
+        favorite:
+
+            isFavorite(song.id)
 
 
 
-    console.log(
+    }));
 
-        "Catalogue chargé :",
 
-        songsDatabase.length,
 
-        "titres"
 
-    );
+
+    filteredSongs = [...allSongs];
+
 
 
 }
+
 
 
 
@@ -709,244 +451,60 @@ function updateCounter(){
 
     DOM.songCount.textContent =
 
-        displayedSongs.length
+
+        filteredSongs.length
 
         +
 
         " chansons disponibles";
 
-
 }
 /*=====================================================
- Alex CARIBOU Karaoké V2.2
- app.js
+ Alex CARIBOU Karaoké V3.0
 
  PACK B
  Recherche + filtres + tri
 ======================================================*/
 
 
+
 /*
 =====================================================
- RECHERCHE PRINCIPALE
+ RECHERCHE SIMPLE
 =====================================================
 */
 
 
-function searchCatalogue(query){
+function searchInSongs(list, query){
 
 
-    let result = [
+    if(!query || query.trim()==="")
 
-        ...songsDatabase
+        return list;
 
-    ];
 
 
+    const q = normalizeText(query);
 
-    if(query && query.trim() !== ""){
 
 
-        if(typeof searchSongs === "function"){
+    return list.filter(song=>{
 
 
-            result = searchSongs(
+        return (
 
-                songsDatabase,
+            normalizeText(song.title)
 
-                query
+            .includes(q)
 
-            );
 
+            ||
 
-        }
 
-        else{
+            normalizeText(song.artist)
 
+            .includes(q)
 
-            const search = normalize(query);
-
-
-
-            result = songsDatabase.filter(song =>{
-
-
-                return (
-
-                    normalize(song.title)
-
-                    .includes(search)
-
-                    ||
-
-                    normalize(song.artist)
-
-                    .includes(search)
-
-                );
-
-
-            });
-
-
-        }
-
-
-    }
-
-
-
-    displayedSongs = result;
-
-
-
-    currentPage = 1;
-
-
-    updateCounter();
-
-
-    return displayedSongs;
-
-
-}
-
-
-
-
-
-/*
-=====================================================
- SUGGESTIONS
-=====================================================
-*/
-
-
-function showSuggestions(query){
-
-
-    if(!DOM.suggestions)
-
-        return;
-
-
-
-    DOM.suggestions.innerHTML = "";
-
-
-
-    if(!query || query.length < 2)
-
-        return;
-
-
-
-
-    let suggestions = [];
-
-
-
-    if(typeof getSuggestions === "function"){
-
-
-        suggestions = getSuggestions(
-
-            songsDatabase,
-
-            query,
-
-            8
-
-        );
-
-
-    }
-
-    else{
-
-
-        suggestions =
-
-            searchCatalogue(query)
-
-            .slice(
-
-                0,
-
-                8
-
-            );
-
-
-    }
-
-
-
-
-    suggestions.forEach(song=>{
-
-
-        const item =
-
-            document.createElement(
-
-                "div"
-
-            );
-
-
-
-        item.className =
-
-            "suggestion-item";
-
-
-
-        item.textContent =
-
-            song.title
-
-            +
-
-            " - "
-
-            +
-
-            song.artist;
-
-
-
-        item.onclick = ()=>{
-
-
-            DOM.search.value =
-
-                song.title;
-
-
-
-            DOM.suggestions.innerHTML = "";
-
-
-
-            searchCatalogue(
-
-                song.title
-
-            );
-
-
-
-            renderApplication();
-
-
-        };
-
-
-
-        DOM.suggestions.appendChild(
-
-            item
 
         );
 
@@ -962,7 +520,40 @@ function showSuggestions(query){
 
 /*
 =====================================================
- FILTRES
+ SUGGESTIONS
+=====================================================
+*/
+
+
+function getSuggestions(query){
+
+
+    if(!query || query.length < 2)
+
+        return [];
+
+
+
+    return searchInSongs(
+
+        allSongs,
+
+        query
+
+    )
+
+    .slice(0,8);
+
+
+}
+
+
+
+
+
+/*
+=====================================================
+ APPLICATION DES FILTRES
 =====================================================
 */
 
@@ -970,51 +561,29 @@ function showSuggestions(query){
 function applyFilters(){
 
 
-    let result = [
 
-        ...songsDatabase
-
-    ];
+    let result = [...allSongs];
 
 
 
 
 
     /*
-    Recherche texte
+    Recherche
     */
 
 
-    const query =
-
-        DOM.search
-
-        ?
-
-        DOM.search.value
-
-        :
-
-        "";
+    if(DOM.search && DOM.search.value){
 
 
+        result = searchInSongs(
 
-    if(query.trim()){
+            result,
 
+            DOM.search.value
 
-        if(typeof searchSongs === "function"){
+        );
 
-
-            result = searchSongs(
-
-                result,
-
-                query
-
-            );
-
-
-        }
 
     }
 
@@ -1040,7 +609,7 @@ function applyFilters(){
 
         const language =
 
-            normalize(
+            normalizeText(
 
                 DOM.languageFilter.value
 
@@ -1048,20 +617,14 @@ function applyFilters(){
 
 
 
-        result = result.filter(song =>
+        result = result.filter(song=>
 
 
-            song.languages.some(lang =>
+            normalizeText(song.language)
 
+            ===
 
-                normalize(lang)
-
-                ===
-
-                language
-
-
-            )
+            language
 
 
         );
@@ -1073,49 +636,52 @@ function applyFilters(){
 
 
 
+
+
     /*
-    Styles
+    Style / catégorie
     */
 
 
     if(
 
-        DOM.StylesFilter
+        DOM.styleFilter
 
         &&
 
-        DOM.StylesFilter.value
+        DOM.styleFilter.value
 
     ){
 
 
-        const Styles =
+        const style =
 
-            normalize(
+            normalizeText(
 
-                DOM.StylesFilter.value
+                DOM.styleFilter.value
 
             );
 
 
 
-        result = result.filter(song =>
+        result = result.filter(song=>{
 
 
-            song.Styles.some(item =>
+            return song.category.some(cat=>
 
 
-                normalize(item)
+                normalizeText(cat)
 
                 ===
 
-                Styles
+                style
 
 
-            )
+            );
 
 
-        );
+        });
+
 
 
     }
@@ -1143,7 +709,7 @@ function applyFilters(){
 
         const artist =
 
-            normalize(
+            normalizeText(
 
                 DOM.artistFilter.value
 
@@ -1151,10 +717,10 @@ function applyFilters(){
 
 
 
-        result = result.filter(song =>
+        result = result.filter(song=>
 
 
-            normalize(song.artist)
+            normalizeText(song.artist)
 
             ===
 
@@ -1171,7 +737,7 @@ function applyFilters(){
 
 
     /*
-    Duo
+    Duo uniquement
     */
 
 
@@ -1186,9 +752,11 @@ function applyFilters(){
     ){
 
 
-        result = result.filter(song =>
+        result = result.filter(song=>
+
 
             song.duo === true
+
 
         );
 
@@ -1199,31 +767,42 @@ function applyFilters(){
 
 
 
+
     /*
-    Explicit
+    Masquer Explicit
     */
 
 
-if(
-    DOM.hideExplicit
-    &&
-    DOM.hideExplicit.checked
-){
+    if(
 
-    result = result.filter(song =>
+        DOM.hideExplicit
 
-        !song.explicit
+        &&
 
-    );
+        DOM.hideExplicit.checked
 
-}
+    ){
+
+
+        result = result.filter(song=>
+
+
+            song.explicit !== true
+
+
+        );
+
+
+    }
+
+
 
 
 
 
 
     /*
-    Favoris
+    Favoris uniquement
     */
 
 
@@ -1238,7 +817,7 @@ if(
     ){
 
 
-        result = result.filter(song =>
+        result = result.filter(song=>
 
 
             isFavorite(song.id)
@@ -1253,7 +832,7 @@ if(
 
 
 
-    displayedSongs = result;
+    filteredSongs = result;
 
 
 
@@ -1264,11 +843,9 @@ if(
     updateCounter();
 
 
-
-    return displayedSongs;
-
-
 }
+
+
 
 
 
@@ -1276,7 +853,7 @@ if(
 
 /*
 =====================================================
- LISTES DES FILTRES
+ CREATION DES LISTES DE FILTRES
 =====================================================
 */
 
@@ -1285,45 +862,46 @@ function fillFilters(){
 
 
 
+
+
+    /*
+    LANGUES
+    */
+
+
     if(DOM.languageFilter){
 
 
-        const languages = [];
+
+        const languages =
+
+            [...new Set(
+
+                allSongs.map(song=>
+
+                    song.language
+
+                )
+
+            )]
+
+            .filter(Boolean)
+
+            .sort();
 
 
 
-        songsDatabase.forEach(song=>{
 
-
-            song.languages.forEach(lang=>{
-
-
-                if(!languages.includes(lang))
-
-                    languages.push(lang);
-
-
-            });
-
-
-        });
-
-
-
-        languages.sort();
-
-
-
-        languages.forEach(lang=>{
+        languages.forEach(language=>{
 
 
             DOM.languageFilter.innerHTML +=
 
             `
 
-            <option value="${lang}">
+            <option value="${language}">
 
-                ${lang}
+                ${language}
 
             </option>
 
@@ -1339,23 +917,28 @@ function fillFilters(){
 
 
 
-
-    if(DOM.StylesFilter){
-
-
-        const Styles=[];
+    /*
+    STYLES
+    */
 
 
-
-        songsDatabase.forEach(song=>{
-
-
-      (song.styles || []).forEach(style=>{
+    if(DOM.styleFilter){
 
 
-                if(!Styles.includes(Styles))
 
-                    Styles.push(Styles);
+        const styles=[];
+
+
+
+        allSongs.forEach(song=>{
+
+
+            song.category.forEach(style=>{
+
+
+                if(!styles.includes(style))
+
+                    styles.push(style);
 
 
             });
@@ -1365,24 +948,39 @@ function fillFilters(){
 
 
 
-        Styles.sort();
+
+        styles.sort();
 
 
 
-        Styles.forEach(Styles=>{
+        styles.forEach(style=>{
 
 
-            DOM.StylesFilter.innerHTML +=
+            DOM.styleFilter.innerHTML +=
+
 
             `
 
-            <option value="${Styles}">
+            <option value="${style}">
 
-                ${Styles}
+                ${
+
+                    typeof translateStyle === "function"
+
+                    ?
+
+                    translateStyle(style)
+
+                    :
+
+                    style
+
+                }
 
             </option>
 
             `;
+
 
 
         });
@@ -1395,34 +993,32 @@ function fillFilters(){
 
 
 
+
+    /*
+    ARTISTES
+    */
+
+
     if(DOM.artistFilter){
 
 
-        const artists=[];
 
+        const artists =
 
+            [...new Set(
 
-        songsDatabase.forEach(song=>{
+                allSongs.map(song=>
 
+                    song.artist
 
-            if(
+                )
 
-                song.artist
+            )]
 
-                &&
+            .filter(Boolean)
 
-                !artists.includes(song.artist)
+            .sort();
 
-            )
-
-                artists.push(song.artist);
-
-
-        });
-
-
-
-        artists.sort();
 
 
 
@@ -1430,6 +1026,7 @@ function fillFilters(){
 
 
             DOM.artistFilter.innerHTML +=
+
 
             `
 
@@ -1439,7 +1036,9 @@ function fillFilters(){
 
             </option>
 
+
             `;
+
 
 
         });
@@ -1449,6 +1048,8 @@ function fillFilters(){
 
 
 }
+
+
 
 
 
@@ -1461,7 +1062,7 @@ function fillFilters(){
 */
 
 
-function sortCatalogue(mode){
+function sortSongs(mode){
 
 
 
@@ -1471,7 +1072,7 @@ function sortCatalogue(mode){
         case "titleAsc":
 
 
-            displayedSongs.sort((a,b)=>
+            filteredSongs.sort((a,b)=>
 
                 a.title.localeCompare(
 
@@ -1485,10 +1086,12 @@ function sortCatalogue(mode){
 
 
 
+
+
         case "titleDesc":
 
 
-            displayedSongs.sort((a,b)=>
+            filteredSongs.sort((a,b)=>
 
                 b.title.localeCompare(
 
@@ -1503,10 +1106,11 @@ function sortCatalogue(mode){
 
 
 
+
         case "artistAsc":
 
 
-            displayedSongs.sort((a,b)=>
+            filteredSongs.sort((a,b)=>
 
                 a.artist.localeCompare(
 
@@ -1522,10 +1126,11 @@ function sortCatalogue(mode){
 
 
 
+
         case "artistDesc":
 
 
-            displayedSongs.sort((a,b)=>
+            filteredSongs.sort((a,b)=>
 
                 b.artist.localeCompare(
 
@@ -1541,10 +1146,11 @@ function sortCatalogue(mode){
 
 
 
+
         case "yearAsc":
 
 
-            displayedSongs.sort((a,b)=>
+            filteredSongs.sort((a,b)=>
 
                 a.year-b.year
 
@@ -1556,10 +1162,11 @@ function sortCatalogue(mode){
 
 
 
+
         case "yearDesc":
 
 
-            displayedSongs.sort((a,b)=>
+            filteredSongs.sort((a,b)=>
 
                 b.year-a.year
 
@@ -1572,28 +1179,73 @@ function sortCatalogue(mode){
     }
 
 
-
-    currentPage = 1;
-
-
-
-    renderApplication();
-
-
 }
-
 /*=====================================================
- Alex CARIBOU Karaoké V2.2
- app.js
+ Alex CARIBOU Karaoké V3.0
 
  PACK C
  Affichage + cartes + pagination
 ======================================================*/
 
 
+
+
+
 /*
 =====================================================
- CREATION D'UNE CARTE CHANSON
+ ECHAPPEMENT HTML
+=====================================================
+*/
+
+
+function escapeHTML(text){
+
+
+    if(!text)
+
+        return "";
+
+
+
+    return text
+
+        .toString()
+
+        .replace(
+
+            /[&<>"']/g,
+
+            char => ({
+
+
+                "&":"&amp;",
+
+                "<":"&lt;",
+
+                ">":"&gt;",
+
+                '"':"&quot;",
+
+                "'":"&#039;"
+
+
+            })[char]
+
+
+        );
+
+
+}
+
+
+
+
+
+
+
+/*
+=====================================================
+ CREATION CARTE CHANSON
 =====================================================
 */
 
@@ -1601,11 +1253,13 @@ function sortCatalogue(mode){
 function createSongCard(song){
 
 
+
     const card = document.createElement(
 
         "article"
 
     );
+
 
 
     card.className =
@@ -1616,49 +1270,39 @@ function createSongCard(song){
 
 
 
-    const languages =
+    const styles =
 
-        song.languages
+        song.category
 
-        .map(lang =>
+        .map(style=>{
 
-            `
 
-            <span class="language">
+            const label =
 
-                ${getFlag(lang)}
+                typeof translateStyle === "function"
 
-                ${lang}
+                ?
 
-            </span>
+                translateStyle(style)
 
-            `
+                :
 
-        )
-
-        .join("");
+                style;
 
 
 
+            return `
 
+            <span class="style-tag">
 
-    const Styles =
-
-        song.Styles
-
-        .map(Styles =>
-
-            `
-
-            <span class="Styles">
-
-                ${Styles}
+                ${label}
 
             </span>
 
-            `
+            `;
 
-        )
+
+        })
 
         .join("");
 
@@ -1670,7 +1314,8 @@ function createSongCard(song){
     card.innerHTML = `
 
 
-        <div class="song-top">
+
+        <div class="song-header">
 
 
             <h3>
@@ -1685,9 +1330,8 @@ function createSongCard(song){
 
                 class="favorite-button"
 
-                data-id="${song.id}"
+                data-id="${song.id}">
 
-            >
 
                 ${
 
@@ -1703,6 +1347,7 @@ function createSongCard(song){
 
                 }
 
+
             </button>
 
 
@@ -1712,9 +1357,12 @@ function createSongCard(song){
 
 
 
-        <div class="artist-name">
+
+        <div class="artist">
+
 
             ${escapeHTML(song.artist)}
+
 
         </div>
 
@@ -1722,7 +1370,8 @@ function createSongCard(song){
 
 
 
-        <div class="song-info">
+
+        <div class="details">
 
 
             ${
@@ -1731,11 +1380,23 @@ function createSongCard(song){
 
                 ?
 
-                `<span>
+                `📅 ${song.year}`
 
-                    📅 ${song.year}
+                :
 
-                 </span>`
+                ""
+
+            }
+
+
+
+            ${
+
+                song.language
+
+                ?
+
+                ` 🌍 ${escapeHTML(song.language)}`
 
                 :
 
@@ -1751,11 +1412,7 @@ function createSongCard(song){
 
                 ?
 
-                `<span>
-
-                    👥 Duo
-
-                 </span>`
+                " 👥 Duo"
 
                 :
 
@@ -1771,11 +1428,7 @@ function createSongCard(song){
 
                 ?
 
-                `<span>
-
-                    🔞 Explicit
-
-                 </span>`
+                " 🔞 Explicit"
 
                 :
 
@@ -1784,15 +1437,6 @@ function createSongCard(song){
             }
 
 
-        </div>
-
-
-
-
-
-        <div class="languages">
-
-            ${languages}
 
         </div>
 
@@ -1800,14 +1444,21 @@ function createSongCard(song){
 
 
 
-        <div class="Styles">
 
-            ${Styles}
+        <div class="styles">
+
+
+            ${styles}
+
 
         </div>
+
 
 
     `;
+
+
+
 
 
 
@@ -1838,12 +1489,19 @@ function createSongCard(song){
 
 
 
-            renderApplication();
+            song.favorite =
+
+                isFavorite(song.id);
+
+
+
+            renderSongs();
 
 
         }
 
     );
+
 
 
 
@@ -1853,128 +1511,6 @@ function createSongCard(song){
 }
 
 
-
-
-
-/*
-=====================================================
- SECURISATION TEXTE HTML
-=====================================================
-*/
-
-
-function escapeHTML(text){
-
-
-    if(!text)
-
-        return "";
-
-
-
-    return text
-
-        .toString()
-
-        .replace(
-
-            /[&<>"']/g,
-
-            function(char){
-
-
-                const map={
-
-                    "&":"&amp;",
-
-                    "<":"&lt;",
-
-                    ">":"&gt;",
-
-                    '"':"&quot;",
-
-                    "'":"&#039;"
-
-                };
-
-
-
-                return map[char];
-
-
-            }
-
-        );
-
-
-}
-
-
-
-
-
-/*
-=====================================================
- DRAPEAUX LANGUES
-=====================================================
-*/
-
-
-function getFlag(language){
-
-
-
-    if(
-
-        typeof CONFIG !== "undefined"
-
-        &&
-
-        CONFIG.flags
-
-    ){
-
-
-        return CONFIG.flags[language]
-
-        ||
-
-        "🌍";
-
-
-    }
-
-
-
-    const flags={
-
-
-        "French":"🇫🇷",
-
-        "Français":"🇫🇷",
-
-        "English":"🇬🇧",
-
-        "Español":"🇪🇸",
-
-        "Spanish":"🇪🇸",
-
-        "Italian":"🇮🇹",
-
-        "Deutsch":"🇩🇪"
-
-    };
-
-
-
-    return flags[language]
-
-    ||
-
-    "🌍";
-
-
-}
 
 
 
@@ -1990,10 +1526,10 @@ function getFlag(language){
 function renderSongs(){
 
 
+
     if(!DOM.songs)
 
         return;
-
 
 
 
@@ -2001,15 +1537,18 @@ function renderSongs(){
 
 
 
+
     const pageSongs =
 
-        getCurrentPageSongs();
+        getPageSongs();
 
 
 
 
 
-    if(pageSongs.length === 0){
+
+    if(pageSongs.length===0){
+
 
 
         DOM.songs.innerHTML = `
@@ -2023,10 +1562,12 @@ function renderSongs(){
         `;
 
 
+
         return;
 
 
     }
+
 
 
 
@@ -2052,6 +1593,8 @@ function renderSongs(){
 
 
 
+
+
 /*
 =====================================================
  PAGINATION
@@ -2059,14 +1602,15 @@ function renderSongs(){
 */
 
 
-function calculatePages(){
+function updatePagination(){
+
 
 
     totalPages = Math.ceil(
 
-        displayedSongs.length /
+        filteredSongs.length /
 
-        APP_SETTINGS.songsPerPage
+        ITEMS_PER_PAGE
 
     );
 
@@ -2077,63 +1621,24 @@ function calculatePages(){
         totalPages = 1;
 
 
-}
+
+
+    if(currentPage > totalPages)
+
+        currentPage = totalPages;
 
 
 
 
-
-function getCurrentPageSongs(){
-
-
-    calculatePages();
-
-
-
-    const start =
-
-        (
-
-            currentPage - 1
-
-        )
-
-        *
-
-        APP_SETTINGS.songsPerPage;
-
-
-
-
-    return displayedSongs.slice(
-
-        start,
-
-        start +
-
-        APP_SETTINGS.songsPerPage
-
-    );
-
-
-}
-
-
-
-
-
-function updatePagination(){
-
-
-
-    calculatePages();
 
 
 
     if(DOM.pageNumber){
 
 
+
         DOM.pageNumber.textContent =
+
 
             "Page "
 
@@ -2151,6 +1656,8 @@ function updatePagination(){
 
 
     }
+
+
 
 
 
@@ -2181,13 +1688,59 @@ function updatePagination(){
     }
 
 
+
 }
 
 
 
 
 
+
+
+function getPageSongs(){
+
+
+
+    const start =
+
+
+        (
+
+            currentPage - 1
+
+        )
+
+        *
+
+        ITEMS_PER_PAGE;
+
+
+
+
+    return filteredSongs.slice(
+
+
+        start,
+
+
+        start +
+
+        ITEMS_PER_PAGE
+
+
+    );
+
+
+}
+
+
+
+
+
+
+
 function nextPage(){
+
 
 
     if(currentPage < totalPages){
@@ -2207,7 +1760,10 @@ function nextPage(){
 
 
 
+
+
 function previousPage(){
+
 
 
     if(currentPage > 1){
@@ -2228,9 +1784,11 @@ function previousPage(){
 
 
 
+
+
 /*
 =====================================================
- RENDU GLOBAL
+ RENDU GENERAL
 =====================================================
 */
 
@@ -2238,39 +1796,47 @@ function previousPage(){
 function renderApplication(){
 
 
+
     renderSongs();
+
 
 
     updatePagination();
 
 
+
     updateCounter();
 
 
-}
 
+}
 /*=====================================================
- Alex CARIBOU Karaoké V2.2
- app.js
+ Alex CARIBOU Karaoké V3.0
 
  PACK D
  Connexions + Initialisation finale
 ======================================================*/
 
 
+
+
+
 /*
 =====================================================
- EVENEMENTS RECHERCHE
+ EVENEMENT RECHERCHE
 =====================================================
 */
 
 
-function connectSearchEvents(){
+function connectSearch(){
+
 
 
     if(!DOM.search)
 
         return;
+
+
 
 
 
@@ -2281,11 +1847,9 @@ function connectSearchEvents(){
         ()=>{
 
 
-            searchCatalogue(
 
-                DOM.search.value
+            applyFilters();
 
-            );
 
 
             showSuggestions(
@@ -2295,7 +1859,9 @@ function connectSearchEvents(){
             );
 
 
+
             renderApplication();
+
 
 
         }
@@ -2303,7 +1869,132 @@ function connectSearchEvents(){
     );
 
 
+
 }
+
+
+
+
+
+
+
+/*
+=====================================================
+ AFFICHAGE SUGGESTIONS
+=====================================================
+*/
+
+
+function showSuggestions(query){
+
+
+
+    if(!DOM.suggestions)
+
+        return;
+
+
+
+    DOM.suggestions.innerHTML = "";
+
+
+
+
+    if(!query || query.length < 2)
+
+        return;
+
+
+
+
+
+
+    const results =
+
+        getSuggestions(query);
+
+
+
+
+
+
+    results.forEach(song=>{
+
+
+        const item = document.createElement(
+
+            "div"
+
+        );
+
+
+
+        item.className =
+
+            "suggestion-item";
+
+
+
+        item.textContent =
+
+
+            song.title
+
+            +
+
+            " - "
+
+            +
+
+            song.artist;
+
+
+
+
+
+        item.addEventListener(
+
+            "click",
+
+            ()=>{
+
+
+                DOM.search.value =
+
+                    song.title;
+
+
+
+                DOM.suggestions.innerHTML="";
+
+
+
+                applyFilters();
+
+
+                renderApplication();
+
+
+            }
+
+        );
+
+
+
+        DOM.suggestions.appendChild(
+
+            item
+
+        );
+
+
+    });
+
+
+}
+
+
+
 
 
 
@@ -2315,15 +2006,16 @@ function connectSearchEvents(){
 */
 
 
-function connectFilterEvents(){
+function connectFilters(){
 
 
-    const filters=[
+
+    const elements = [
 
 
         DOM.languageFilter,
 
-        DOM.StylesFilter,
+        DOM.styleFilter,
 
         DOM.artistFilter,
 
@@ -2338,13 +2030,15 @@ function connectFilterEvents(){
 
 
 
-    filters.forEach(filter=>{
 
 
-        if(filter){
+    elements.forEach(element=>{
 
 
-            filter.addEventListener(
+        if(element){
+
+
+            element.addEventListener(
 
                 "change",
 
@@ -2373,19 +2067,25 @@ function connectFilterEvents(){
 
 
 
+
+
+
 /*
 =====================================================
- EVENEMENT TRI
+ TRI
 =====================================================
 */
 
 
-function connectSortEvent(){
+function connectSort(){
+
 
 
     if(!DOM.sortSelect)
 
         return;
+
+
 
 
 
@@ -2396,11 +2096,16 @@ function connectSortEvent(){
         ()=>{
 
 
-            sortCatalogue(
+            sortSongs(
 
                 DOM.sortSelect.value
 
             );
+
+
+
+            renderApplication();
+
 
 
         }
@@ -2414,9 +2119,11 @@ function connectSortEvent(){
 
 
 
+
+
 /*
 =====================================================
- EVENEMENTS PAGINATION
+ PAGINATION EVENTS
 =====================================================
 */
 
@@ -2476,6 +2183,8 @@ function connectPagination(){
 
 
 
+
+
 /*
 =====================================================
  FERMETURE SUGGESTIONS
@@ -2483,14 +2192,16 @@ function connectPagination(){
 */
 
 
-function connectSuggestionClose(){
+function closeSuggestions(){
+
 
 
     document.addEventListener(
 
         "click",
 
-        (event)=>{
+        event=>{
+
 
 
             if(
@@ -2524,9 +2235,12 @@ function connectSuggestionClose(){
 
 
 
+
+
+
 /*
 =====================================================
- INITIALISATION COMPLETE
+ INITIALISATION APPLICATION
 =====================================================
 */
 
@@ -2534,19 +2248,32 @@ function connectSuggestionClose(){
 function initAlexCaribou(){
 
 
+
     console.log(
 
-        "🎤 Alex CARIBOU Karaoké V2.2 démarrage"
+        "🎤 Alex CARIBOU Karaoké V3.0"
 
     );
 
 
 
-    cacheDOM();
+
+
+    initDOM();
 
 
 
-    loadCatalogue();
+
+
+    loadFavorites();
+
+
+
+
+
+    prepareSongs();
+
+
 
 
 
@@ -2554,15 +2281,29 @@ function initAlexCaribou(){
 
 
 
-    connectSearchEvents();
+
+
+    applyFilters();
 
 
 
-    connectFilterEvents();
+
+
+    connectSearch();
 
 
 
-    connectSortEvent();
+
+
+    connectFilters();
+
+
+
+
+
+    connectSort();
+
+
 
 
 
@@ -2570,7 +2311,11 @@ function initAlexCaribou(){
 
 
 
-    connectSuggestionClose();
+
+
+    closeSuggestions();
+
+
 
 
 
@@ -2584,9 +2329,11 @@ function initAlexCaribou(){
 
 
 
+
+
 /*
 =====================================================
- LANCEMENT APPLICATION
+ LANCEMENT
 =====================================================
 */
 
