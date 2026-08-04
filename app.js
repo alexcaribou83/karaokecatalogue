@@ -643,7 +643,8 @@ function loadCatalogue(){
 
         songs.map(
 console.log(
-    songsDatabase.slice(0,5)
+    "TEST STYLE",
+    songsDatabase[0].styles
 );
             (song,index)=>
 
