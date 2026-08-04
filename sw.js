@@ -1,124 +1,250 @@
-/* =====================================================
-   Alex Karaoke V2.1
-   Service Worker
-===================================================== */
+/*=====================================================
+ Alex CARIBOU Karaoké V3.0
+ sw.js
+ Service Worker
+======================================================*/
 
-"use strict";
 
-const CACHE_NAME = "alex-CARIBOU-karaoke-v2.1.0";
+const CACHE_NAME =
 
-const APP_FILES = [
+    "alex-caribou-karaoke-v3";
+
+
+
+
+
+const FILES_TO_CACHE = [
+
+
     "./",
+
+
     "./index.html",
+
+
     "./style.css",
+
+
     "./config.js",
-    "./search.js",
-    "./app.js",
+
+
     "./songs.js",
-    "./manifest.json",
-    "./icons/icon-192.png",
-    "./icons/icon-512.png"
+
+
+    "./search.js",
+
+
+    "./app.js",
+
+
+    "./manifest.json"
+
+
 ];
 
 
-/* =====================================================
-   INSTALLATION
-===================================================== */
-
-self.addEventListener("install", event => {
-
-    event.waitUntil(
-
-        caches
-            .open(CACHE_NAME)
-            .then(cache => cache.addAll(APP_FILES))
-
-    );
-
-    self.skipWaiting();
-
-});
 
 
-/* =====================================================
-   ACTIVATION
-===================================================== */
 
-self.addEventListener("activate", event => {
 
-    event.waitUntil(
 
-        caches.keys().then(keys =>
+/*
+=====================================================
+ INSTALLATION
+=====================================================
+*/
 
-            Promise.all(
 
-                keys.map(key => {
+self.addEventListener(
 
-                    if (key !== CACHE_NAME) {
+    "install",
 
-                        return caches.delete(key);
+    event => {
 
-                    }
 
-                })
+        event.waitUntil(
+
+
+            caches.open(
+
+                CACHE_NAME
 
             )
 
-        )
-
-    );
-
-    self.clients.claim();
-
-});
+            .then(cache=>{
 
 
-/* =====================================================
-   FETCH
-===================================================== */
+                return cache.addAll(
 
-self.addEventListener("fetch", event => {
+                    FILES_TO_CACHE
 
-    if (event.request.method !== "GET") return;
+                );
 
-    event.respondWith(
 
-        caches.match(event.request)
+            })
 
-        .then(response => {
 
-            if (response) {
+        );
 
-                return response;
 
-            }
+        self.skipWaiting();
 
-            return fetch(event.request)
 
-                .then(networkResponse => {
+    }
 
-                    const copy = networkResponse.clone();
+);
 
-                    caches.open(CACHE_NAME)
 
-                        .then(cache => {
 
-                            cache.put(event.request, copy);
 
-                        });
 
-                    return networkResponse;
 
-                })
 
-                .catch(() => {
+/*
+=====================================================
+ ACTIVATION
+=====================================================
+*/
 
-                    return caches.match("./index.html");
+
+self.addEventListener(
+
+    "activate",
+
+    event=>{
+
+
+        event.waitUntil(
+
+
+            caches.keys()
+
+            .then(keys=>{
+
+
+                return Promise.all(
+
+
+                    keys.map(key=>{
+
+
+                        if(
+
+                            key !== CACHE_NAME
+
+                        ){
+
+
+                            return caches.delete(
+
+                                key
+
+                            );
+
+
+                        }
+
+
+                    })
+
+
+                );
+
+
+            })
+
+
+        );
+
+
+
+        self.clients.claim();
+
+
+    }
+
+);
+
+
+
+
+
+
+
+/*
+=====================================================
+ REQUETES
+=====================================================
+*/
+
+
+self.addEventListener(
+
+    "fetch",
+
+    event=>{
+
+
+        event.respondWith(
+
+
+            caches.match(
+
+                event.request
+
+            )
+
+            .then(response=>{
+
+
+                return response
+
+                ||
+
+                fetch(
+
+                    event.request
+
+                )
+
+                .then(networkResponse=>{
+
+
+                    return caches.open(
+
+                        CACHE_NAME
+
+                    )
+
+                    .then(cache=>{
+
+
+                        cache.put(
+
+                            event.request,
+
+                            networkResponse.clone()
+
+                        );
+
+
+
+                        return networkResponse;
+
+
+                    });
+
 
                 });
 
-        })
 
-    );
 
-});
+            })
+
+
+        );
+
+
+    }
+
+);
