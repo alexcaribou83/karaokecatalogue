@@ -1,209 +1,591 @@
 /*=====================================================
- Alex CARIBOU Karaoké V2.1
+ Alex CARIBOU Karaoké V2.2
  app.js
+
  PACK A
- Initialisation + gestion catalogue
+ Base application + catalogue + données
 ======================================================*/
 
 
+"use strict";
+
+
 /*
---------------------------------------------------
- Variables globales
---------------------------------------------------
+=====================================================
+ VARIABLES GLOBALES
+=====================================================
 */
 
-let allSongs = [];
-let filteredSongs = [];
+
+let songsDatabase = [];
+
+let displayedSongs = [];
+
 let currentPage = 1;
+
+let totalPages = 1;
+
 let favorites = [];
 
 
-/*
---------------------------------------------------
- Configuration
---------------------------------------------------
-*/
 
-const APP_CONFIG = {
+const APP_SETTINGS = {
 
     songsPerPage: 50,
 
-    storageKey: "alex_caribou_favorites"
+    favoriteStorage:
+        "alex_caribou_favorites"
 
 };
 
 
+
+
 /*
---------------------------------------------------
- Chargement des favoris
---------------------------------------------------
+=====================================================
+ CACHE DES ELEMENTS HTML
+ Compatible index.html fourni
+=====================================================
 */
+
+
+const DOM = {
+
+
+    search:
+        null,
+
+
+    songs:
+        null,
+
+
+    songCount:
+        null,
+
+
+    languageFilter:
+        null,
+
+
+    styleFilter:
+        null,
+
+
+    artistFilter:
+        null,
+
+
+    sortSelect:
+        null,
+
+
+    duoOnly:
+        null,
+
+
+    hideExplicit:
+        null,
+
+
+    favoritesOnly:
+        null,
+
+
+    suggestions:
+        null,
+
+
+    prevPage:
+        null,
+
+
+    nextPage:
+        null,
+
+
+    pageNumber:
+        null
+
+};
+
+
+
+
+/*
+=====================================================
+ INITIALISATION DOM
+=====================================================
+*/
+
+
+function cacheDOM(){
+
+
+    DOM.search =
+        document.getElementById("search");
+
+
+    DOM.songs =
+        document.getElementById("songs");
+
+
+    DOM.songCount =
+        document.getElementById("songCount");
+
+
+    DOM.languageFilter =
+        document.getElementById("languageFilter");
+
+
+    DOM.styleFilter =
+        document.getElementById("styleFilter");
+
+
+    DOM.artistFilter =
+        document.getElementById("artistFilter");
+
+
+    DOM.sortSelect =
+        document.getElementById("sortSelect");
+
+
+    DOM.duoOnly =
+        document.getElementById("duoOnly");
+
+
+    DOM.hideExplicit =
+        document.getElementById("hideExplicit");
+
+
+    DOM.favoritesOnly =
+        document.getElementById("favoritesOnly");
+
+
+    DOM.suggestions =
+        document.getElementById("suggestions");
+
+
+    DOM.prevPage =
+        document.getElementById("prevPage");
+
+
+    DOM.nextPage =
+        document.getElementById("nextPage");
+
+
+    DOM.pageNumber =
+        document.getElementById("pageNumber");
+
+
+}
+
+
+
+
+/*
+=====================================================
+ NORMALISATION TEXTE
+=====================================================
+*/
+
+
+function cleanText(value){
+
+
+    if(!value)
+
+        return "";
+
+
+    return value
+
+        .toString()
+
+        .trim();
+
+
+}
+
+
+
+
+/*
+=====================================================
+ NORMALISATION RECHERCHE
+=====================================================
+*/
+
+
+function normalize(value){
+
+
+    if(!value)
+
+        return "";
+
+
+    return value
+
+        .toString()
+
+        .toLowerCase()
+
+        .normalize("NFD")
+
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+
+        .trim();
+
+
+}
+
+
+
+
+/*
+=====================================================
+ TRANSFORMATION VALEURS MULTIPLES CSV
+=====================================================
+*/
+
+
+function parseMultipleValues(value){
+
+
+    if(!value)
+
+        return [];
+
+
+
+    return value
+
+        .toString()
+
+        .split(
+            /[,;|]/
+        )
+
+        .map(item =>
+
+            item.trim()
+
+        )
+
+        .filter(item =>
+
+            item.length > 0
+
+        );
+
+
+}
+
+
+
+
+
+/*
+=====================================================
+ CONVERSION BOOLEAN CSV
+=====================================================
+*/
+
+
+function parseBoolean(value){
+
+
+    if(value === true)
+
+        return true;
+
+
+
+    if(!value)
+
+        return false;
+
+
+
+    const test =
+
+        normalize(value);
+
+
+
+    return [
+
+        "1",
+
+        "true",
+
+        "yes",
+
+        "oui",
+
+        "x"
+
+    ]
+
+    .includes(test);
+
+
+}
+
+
+
+
+/*
+=====================================================
+ CHARGEMENT FAVORIS
+=====================================================
+*/
+
 
 function loadFavorites(){
 
-    const saved = localStorage.getItem(
-        APP_CONFIG.storageKey
-    );
 
-    if(saved){
+    try{
 
-        favorites = JSON.parse(saved);
 
-    }else{
+        const data =
+
+            localStorage.getItem(
+
+                APP_SETTINGS.favoriteStorage
+
+            );
+
+
+
+        favorites =
+
+            data
+
+            ?
+
+            JSON.parse(data)
+
+            :
+
+            [];
+
+
+    }
+
+    catch(error){
+
 
         favorites = [];
 
+
     }
+
 
 }
 
 
+
+
+
 /*
---------------------------------------------------
- Sauvegarde favoris
---------------------------------------------------
+=====================================================
+ SAUVEGARDE FAVORIS
+=====================================================
 */
+
 
 function saveFavorites(){
 
+
     localStorage.setItem(
 
-        APP_CONFIG.storageKey,
+        APP_SETTINGS.favoriteStorage,
 
-        JSON.stringify(favorites)
+        JSON.stringify(
+            favorites
+        )
 
     );
 
+
 }
 
 
+
+
 /*
---------------------------------------------------
- Vérifie favori
---------------------------------------------------
+=====================================================
+ FAVORIS
+=====================================================
 */
+
 
 function isFavorite(id){
 
+
     return favorites.includes(id);
+
 
 }
 
 
-/*
---------------------------------------------------
- Ajoute / retire favori
---------------------------------------------------
-*/
+
 
 function toggleFavorite(id){
 
+
     if(isFavorite(id)){
 
-        favorites = favorites.filter(
-            item => item !== id
-        );
 
-    }else{
+        favorites =
+
+            favorites.filter(
+
+                fav => fav !== id
+
+            );
+
+
+    }
+
+    else{
+
 
         favorites.push(id);
 
+
     }
+
 
 
     saveFavorites();
 
+
 }
 
 
 
+
 /*
---------------------------------------------------
- Préparation d'une chanson
- Compatible CSV Karaoké
---------------------------------------------------
+=====================================================
+ PREPARATION D'UNE CHANSON
+=====================================================
 */
 
-function prepareSong(song,index){
+
+function prepareSong(raw,index){
 
 
     return {
 
 
         id:
-            song.id ||
+
+            raw.id
+
+            ||
+
             index + 1,
 
 
+
         title:
-            song.Title ||
-            song.title ||
-            "",
+
+            cleanText(
+
+                raw.Title
+
+                ||
+
+                raw.title
+
+            ),
+
 
 
         artist:
-            song.Artist ||
-            song.artist ||
-            "",
+
+            cleanText(
+
+                raw.Artist
+
+                ||
+
+                raw.artist
+
+            ),
 
 
 
         languages:
-            splitValues(
-                song.Languages ||
-                song.languages
+
+            parseMultipleValues(
+
+                raw.Languages
+
+                ||
+
+                raw.languages
+
             ),
 
 
 
         styles:
-            splitValues(
-                song.Styles ||
-                song.styles
-            ),
 
+            parseMultipleValues(
 
+                raw.Styles
 
-        /*
-        Gardé pour search.js
-        */
+                ||
 
-        style:
-            (
-                song.Styles ||
-                song.styles ||
-                ""
+                raw.styles
+
             ),
 
 
 
         year:
+
             Number(
-                song.Year ||
-                song.year ||
+
+                raw.Year
+
+                ||
+
+                raw.year
+
+                ||
+
                 0
+
             ),
 
 
 
         duo:
-            convertBoolean(
-                song.Duo
+
+            parseBoolean(
+
+                raw.Duo
+
             ),
 
 
 
         explicit:
-            convertBoolean(
-                song.Explicit
-            ),
 
+            parseBoolean(
 
+                raw.Explicit
 
-        favorite:
-            isFavorite(
-                song.id || index + 1
             )
+
 
 
     };
@@ -213,141 +595,80 @@ function prepareSong(song,index){
 
 
 
-/*
---------------------------------------------------
- Séparation valeurs multiples
- Exemple :
- "Pop;Rock"
- devient :
- ["Pop","Rock"]
---------------------------------------------------
-*/
-
-function splitValues(value){
-
-
-    if(!value)
-
-        return [];
-
-
-    return value
-
-        .toString()
-
-        .split(/[;,|]/)
-
-        .map(item =>
-            item.trim()
-        )
-
-        .filter(item =>
-            item.length
-        );
-
-
-}
-
-
 
 
 /*
---------------------------------------------------
- Conversion oui/non
---------------------------------------------------
+=====================================================
+ CHARGEMENT CATALOGUE
+=====================================================
 */
 
-function convertBoolean(value){
 
-
-    if(
-        value === true ||
-        value === 1
-    )
-
-        return true;
-
-
-    if(!value)
-
-        return false;
-
-
-    return [
-
-        "yes",
-        "oui",
-        "true",
-        "1",
-        "x"
-
-    ]
-
-    .includes(
-
-        value
-        .toString()
-        .toLowerCase()
-        .trim()
-
-    );
-
-
-}
-
-
-
-
-/*
---------------------------------------------------
- Chargement du catalogue
---------------------------------------------------
-*/
-
-function loadSongs(){
-
-
-    if(
-        typeof songs === "undefined"
-    ){
-
-        console.error(
-            "songs.js introuvable"
-        );
-
-        return;
-
-    }
-
+function loadCatalogue(){
 
 
     loadFavorites();
 
 
 
-    allSongs = songs.map(
-
-        (song,index)=>
-
-            prepareSong(
-                song,
-                index
-            )
-
-    );
+    if(typeof songs === "undefined"){
 
 
+        console.error(
 
-    filteredSongs = [...allSongs];
+            "songs.js absent"
+
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+    songsDatabase =
+
+        songs.map(
+
+            (song,index)=>
+
+                prepareSong(
+
+                    song,
+
+                    index
+
+                )
+
+        );
+
+
+
+
+    displayedSongs =
+
+        [
+
+            ...songsDatabase
+
+        ];
+
+
+
+    updateCounter();
+
 
 
     console.log(
 
         "Catalogue chargé :",
 
-        allSongs.length,
+        songsDatabase.length,
 
-        "chansons"
+        "titres"
 
     );
 
@@ -356,152 +677,123 @@ function loadSongs(){
 
 
 
-/*
---------------------------------------------------
- Retourne le catalogue complet
---------------------------------------------------
-*/
-
-function getAllSongs(){
-
-    return allSongs;
-
-}
-
-
 
 /*
---------------------------------------------------
- Retourne les langues disponibles
---------------------------------------------------
+=====================================================
+ COMPTEUR
+=====================================================
 */
 
-function getLanguages(){
+
+function updateCounter(){
 
 
-    let result=[];
+    if(!DOM.songCount)
 
-
-    allSongs.forEach(song=>{
-
-
-        song.languages.forEach(lang=>{
-
-
-            if(!result.includes(lang))
-
-                result.push(lang);
-
-
-        });
-
-
-    });
+        return;
 
 
 
-    return result.sort();
+    DOM.songCount.textContent =
+
+        displayedSongs.length
+
+        +
+
+        " chansons disponibles";
 
 
 }
-
-
-
-
-/*
---------------------------------------------------
- Retourne les styles disponibles
---------------------------------------------------
-*/
-
-function getStyles(){
-
-
-    let result=[];
-
-
-    allSongs.forEach(song=>{
-
-
-        song.styles.forEach(style=>{
-
-
-            if(!result.includes(style))
-
-                result.push(style);
-
-
-        });
-
-
-    });
-
-
-
-    return result.sort();
-
-
-}
-
-
-
-
 /*=====================================================
- Alex CARIBOU Karaoké V2.1
+ Alex CARIBOU Karaoké V2.2
  app.js
+
  PACK B
- Recherche + filtres
+ Recherche + filtres + tri
 ======================================================*/
 
 
 /*
---------------------------------------------------
- Recherche principale
- Utilise search.js
---------------------------------------------------
+=====================================================
+ RECHERCHE PRINCIPALE
+=====================================================
 */
 
-function performSearch(query){
+
+function searchCatalogue(query){
 
 
-    filteredSongs = searchSongs(
+    let result = [
 
-        allSongs,
+        ...songsDatabase
 
-        query
+    ];
 
-    );
+
+
+    if(query && query.trim() !== ""){
+
+
+        if(typeof searchSongs === "function"){
+
+
+            result = searchSongs(
+
+                songsDatabase,
+
+                query
+
+            );
+
+
+        }
+
+        else{
+
+
+            const search = normalize(query);
+
+
+
+            result = songsDatabase.filter(song =>{
+
+
+                return (
+
+                    normalize(song.title)
+
+                    .includes(search)
+
+                    ||
+
+                    normalize(song.artist)
+
+                    .includes(search)
+
+                );
+
+
+            });
+
+
+        }
+
+
+    }
+
+
+
+    displayedSongs = result;
+
 
 
     currentPage = 1;
 
 
-    return filteredSongs;
+    updateCounter();
 
 
-}
-
-
-
-
-/*
---------------------------------------------------
- Suggestions recherche
---------------------------------------------------
-*/
-
-function getSearchSuggestions(query){
-
-
-    return getSuggestions(
-
-        allSongs,
-
-        query,
-
-        8
-
-    );
+    return displayedSongs;
 
 
 }
@@ -511,25 +803,236 @@ function getSearchSuggestions(query){
 
 
 /*
---------------------------------------------------
- Filtre général
---------------------------------------------------
+=====================================================
+ SUGGESTIONS
+=====================================================
 */
 
-function filterSongs(filters = {}){
+
+function showSuggestions(query){
 
 
-    let result = [...allSongs];
+    if(!DOM.suggestions)
+
+        return;
+
+
+
+    DOM.suggestions.innerHTML = "";
+
+
+
+    if(!query || query.length < 2)
+
+        return;
+
+
+
+
+    let suggestions = [];
+
+
+
+    if(typeof getSuggestions === "function"){
+
+
+        suggestions = getSuggestions(
+
+            songsDatabase,
+
+            query,
+
+            8
+
+        );
+
+
+    }
+
+    else{
+
+
+        suggestions =
+
+            searchCatalogue(query)
+
+            .slice(
+
+                0,
+
+                8
+
+            );
+
+
+    }
+
+
+
+
+    suggestions.forEach(song=>{
+
+
+        const item =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+
+
+        item.className =
+
+            "suggestion-item";
+
+
+
+        item.textContent =
+
+            song.title
+
+            +
+
+            " - "
+
+            +
+
+            song.artist;
+
+
+
+        item.onclick = ()=>{
+
+
+            DOM.search.value =
+
+                song.title;
+
+
+
+            DOM.suggestions.innerHTML = "";
+
+
+
+            searchCatalogue(
+
+                song.title
+
+            );
+
+
+
+            renderApplication();
+
+
+        };
+
+
+
+        DOM.suggestions.appendChild(
+
+            item
+
+        );
+
+
+    });
+
+
+}
+
+
+
+
+
+/*
+=====================================================
+ FILTRES
+=====================================================
+*/
+
+
+function applyFilters(){
+
+
+    let result = [
+
+        ...songsDatabase
+
+    ];
+
+
 
 
 
     /*
-    -----------------------------
-    Langue
-    -----------------------------
+    Recherche texte
     */
 
-    if(filters.language){
+
+    const query =
+
+        DOM.search
+
+        ?
+
+        DOM.search.value
+
+        :
+
+        "";
+
+
+
+    if(query.trim()){
+
+
+        if(typeof searchSongs === "function"){
+
+
+            result = searchSongs(
+
+                result,
+
+                query
+
+            );
+
+
+        }
+
+    }
+
+
+
+
+
+    /*
+    Langue
+    */
+
+
+    if(
+
+        DOM.languageFilter
+
+        &&
+
+        DOM.languageFilter.value
+
+    ){
+
+
+        const language =
+
+            normalize(
+
+                DOM.languageFilter.value
+
+            );
+
 
 
         result = result.filter(song =>
@@ -537,11 +1040,13 @@ function filterSongs(filters = {}){
 
             song.languages.some(lang =>
 
-                normalizeText(lang)
+
+                normalize(lang)
 
                 ===
 
-                normalizeText(filters.language)
+                language
+
 
             )
 
@@ -553,61 +1058,45 @@ function filterSongs(filters = {}){
 
 
 
+
+
     /*
-    -----------------------------
     Style
-    -----------------------------
     */
 
-    if(filters.style){
+
+    if(
+
+        DOM.styleFilter
+
+        &&
+
+        DOM.styleFilter.value
+
+    ){
+
+
+        const style =
+
+            normalize(
+
+                DOM.styleFilter.value
+
+            );
+
 
 
         result = result.filter(song =>
 
 
-            song.styles.some(style =>
+            song.styles.some(item =>
 
-                normalizeText(style)
+
+                normalize(item)
 
                 ===
 
-                normalizeText(filters.style)
-
-            )
-
-
-        );
-
-
-    }
-
-
-
-    /*
-    -----------------------------
-    Plusieurs styles sélectionnés
-    -----------------------------
-    */
-
-    if(filters.styles && filters.styles.length){
-
-
-        result = result.filter(song =>
-
-
-            filters.styles.some(selected =>
-
-
-                song.styles.some(style =>
-
-
-                    normalizeText(style)
-
-                    ===
-
-                    normalizeText(selected)
-
-                )
+                style
 
 
             )
@@ -622,18 +1111,42 @@ function filterSongs(filters = {}){
 
 
 
+
     /*
-    -----------------------------
-    Année minimum
-    -----------------------------
+    Artiste
     */
 
-    if(filters.yearMin){
+
+    if(
+
+        DOM.artistFilter
+
+        &&
+
+        DOM.artistFilter.value
+
+    ){
+
+
+        const artist =
+
+            normalize(
+
+                DOM.artistFilter.value
+
+            );
+
 
 
         result = result.filter(song =>
 
-            song.year >= filters.yearMin
+
+            normalize(song.artist)
+
+            ===
+
+            artist
+
 
         );
 
@@ -642,35 +1155,22 @@ function filterSongs(filters = {}){
 
 
 
-    /*
-    -----------------------------
-    Année maximum
-    -----------------------------
-    */
-
-    if(filters.yearMax){
-
-
-        result = result.filter(song =>
-
-            song.year <= filters.yearMax
-
-        );
-
-
-    }
-
-
-
 
 
     /*
-    -----------------------------
     Duo
-    -----------------------------
     */
 
-    if(filters.duo === true){
+
+    if(
+
+        DOM.duoOnly
+
+        &&
+
+        DOM.duoOnly.checked
+
+    ){
 
 
         result = result.filter(song =>
@@ -687,38 +1187,55 @@ function filterSongs(filters = {}){
 
 
     /*
-    -----------------------------
     Explicit
-    -----------------------------
     */
 
-    if(filters.explicit === true){
+
+    if(
+
+        DOM.hideExplicit
+
+        &&
+
+        DOM.hideExplicit.checked
+
+    ){
 
 
         result = result.filter(song =>
 
-            song.explicit === true
+            song.explicit === false
 
         );
 
 
     }
+
 
 
 
 
     /*
-    -----------------------------
-    Favoris uniquement
-    -----------------------------
+    Favoris
     */
 
-    if(filters.favorites === true){
+
+    if(
+
+        DOM.favoritesOnly
+
+        &&
+
+        DOM.favoritesOnly.checked
+
+    ){
 
 
         result = result.filter(song =>
 
+
             isFavorite(song.id)
+
 
         );
 
@@ -729,13 +1246,19 @@ function filterSongs(filters = {}){
 
 
 
-    filteredSongs = result;
+    displayedSongs = result;
+
 
 
     currentPage = 1;
 
 
-    return filteredSongs;
+
+    updateCounter();
+
+
+
+    return displayedSongs;
 
 
 }
@@ -743,35 +1266,64 @@ function filterSongs(filters = {}){
 
 
 
+
 /*
---------------------------------------------------
- Recherche + filtres combinés
---------------------------------------------------
+=====================================================
+ LISTES DES FILTRES
+=====================================================
 */
 
-function searchWithFilters(query,filters={}){
 
-
-    let result;
+function fillFilters(){
 
 
 
-    if(query && query.trim() !== ""){
+    if(DOM.languageFilter){
 
 
-        result = searchSongs(
-
-            allSongs,
-
-            query
-
-        );
+        const languages = [];
 
 
-    }else{
+
+        songsDatabase.forEach(song=>{
 
 
-        result = [...allSongs];
+            song.languages.forEach(lang=>{
+
+
+                if(!languages.includes(lang))
+
+                    languages.push(lang);
+
+
+            });
+
+
+        });
+
+
+
+        languages.sort();
+
+
+
+        languages.forEach(lang=>{
+
+
+            DOM.languageFilter.innerHTML +=
+
+            `
+
+            <option value="${lang}">
+
+                ${lang}
+
+            </option>
+
+            `;
+
+
+        });
 
 
     }
@@ -780,299 +1332,300 @@ function searchWithFilters(query,filters={}){
 
 
 
-    /*
-    Applique les filtres
-    sur le résultat
-    */
+
+    if(DOM.styleFilter){
 
 
-    if(filters.language){
+        const styles=[];
 
 
-        result = result.filter(song =>
+
+        songsDatabase.forEach(song=>{
 
 
-            song.languages.some(lang =>
+            song.styles.forEach(style=>{
 
-                normalizeText(lang)
 
-                ===
+                if(!styles.includes(style))
 
-                normalizeText(filters.language)
+                    styles.push(style);
+
+
+            });
+
+
+        });
+
+
+
+        styles.sort();
+
+
+
+        styles.forEach(style=>{
+
+
+            DOM.styleFilter.innerHTML +=
+
+            `
+
+            <option value="${style}">
+
+                ${style}
+
+            </option>
+
+            `;
+
+
+        });
+
+
+    }
+
+
+
+
+
+
+    if(DOM.artistFilter){
+
+
+        const artists=[];
+
+
+
+        songsDatabase.forEach(song=>{
+
+
+            if(
+
+                song.artist
+
+                &&
+
+                !artists.includes(song.artist)
 
             )
 
+                artists.push(song.artist);
 
-        );
+
+        });
+
+
+
+        artists.sort();
+
+
+
+        artists.forEach(artist=>{
+
+
+            DOM.artistFilter.innerHTML +=
+
+            `
+
+            <option value="${artist}">
+
+                ${artist}
+
+            </option>
+
+            `;
+
+
+        });
 
 
     }
 
 
+}
 
 
 
-    if(filters.styles && filters.styles.length){
 
 
-        result = result.filter(song =>
+/*
+=====================================================
+ TRI
+=====================================================
+*/
 
 
-            filters.styles.some(selected =>
+function sortCatalogue(mode){
 
 
-                song.styles.some(style =>
 
-                    normalizeText(style)
+    switch(mode){
 
-                    ===
 
-                    normalizeText(selected)
+        case "titleAsc":
+
+
+            displayedSongs.sort((a,b)=>
+
+                a.title.localeCompare(
+
+                    b.title
 
                 )
 
+            );
 
-            )
+        break;
 
 
-        );
+
+        case "titleDesc":
+
+
+            displayedSongs.sort((a,b)=>
+
+                b.title.localeCompare(
+
+                    a.title
+
+                )
+
+            );
+
+        break;
+
+
+
+
+        case "artistAsc":
+
+
+            displayedSongs.sort((a,b)=>
+
+                a.artist.localeCompare(
+
+                    b.artist
+
+                )
+
+            );
+
+
+        break;
+
+
+
+
+        case "artistDesc":
+
+
+            displayedSongs.sort((a,b)=>
+
+                b.artist.localeCompare(
+
+                    a.artist
+
+                )
+
+            );
+
+
+        break;
+
+
+
+
+        case "yearAsc":
+
+
+            displayedSongs.sort((a,b)=>
+
+                a.year-b.year
+
+            );
+
+
+        break;
+
+
+
+
+        case "yearDesc":
+
+
+            displayedSongs.sort((a,b)=>
+
+                b.year-a.year
+
+            );
+
+
+        break;
 
 
     }
 
-
-
-
-
-    if(filters.duo){
-
-
-        result = result.filter(song =>
-
-            song.duo
-
-        );
-
-
-    }
-
-
-
-
-
-    if(filters.explicit){
-
-
-        result = result.filter(song =>
-
-            song.explicit
-
-        );
-
-
-    }
-
-
-
-
-
-    if(filters.favorites){
-
-
-        result = result.filter(song =>
-
-            isFavorite(song.id)
-
-        );
-
-
-    }
-
-
-
-
-    filteredSongs = result;
 
 
     currentPage = 1;
 
 
-    return filteredSongs;
 
-
-}
-
-
-
-
-/*
---------------------------------------------------
- Recherche rapide par ID
---------------------------------------------------
-*/
-
-function getSongById(id){
-
-
-    return allSongs.find(song =>
-
-        song.id === id
-
-    );
-
-
-}
-
-
-
-
-/*
---------------------------------------------------
- Compteur résultats
---------------------------------------------------
-*/
-
-function getResultCount(){
-
-
-    return filteredSongs.length;
+    renderApplication();
 
 
 }
 
 /*=====================================================
- Alex CARIBOU Karaoké V2.1
+ Alex CARIBOU Karaoké V2.2
  app.js
+
  PACK C
- Affichage interface
+ Affichage + cartes + pagination
 ======================================================*/
 
 
 /*
---------------------------------------------------
- Élément principal d'affichage
---------------------------------------------------
+=====================================================
+ CREATION D'UNE CARTE CHANSON
+=====================================================
 */
 
-function getResultsContainer(){
-
-
-    return document.getElementById(
-
-        "results"
-
-    );
-
-
-}
-
-
-
-
-
-/*
---------------------------------------------------
- Affichage catalogue
---------------------------------------------------
-*/
-
-function renderSongs(list = filteredSongs){
-
-
-    const container = getResultsContainer();
-
-
-
-    if(!container){
-
-        console.error(
-
-            "Zone #results introuvable dans index.html"
-
-        );
-
-        return;
-
-    }
-
-
-
-
-
-    container.innerHTML = "";
-
-
-
-
-
-    if(list.length === 0){
-
-
-        container.innerHTML = `
-
-            <div class="no-result">
-
-                Aucun titre trouvé
-
-            </div>
-
-        `;
-
-
-        return;
-
-    }
-
-
-
-
-
-    list.forEach(song =>{
-
-
-        container.appendChild(
-
-            createSongCard(song)
-
-        );
-
-
-    });
-
-
-}
-
-
-
-
-
-/*
---------------------------------------------------
- Création carte chanson
---------------------------------------------------
-*/
 
 function createSongCard(song){
 
 
     const card = document.createElement(
 
-        "div"
+        "article"
 
     );
 
 
-    card.className = "song-card";
+    card.className =
+
+        "song-card";
 
 
 
 
 
-    const languages = song.languages
+    const languages =
+
+        song.languages
 
         .map(lang =>
 
-            createLanguageBadge(lang)
+            `
+
+            <span class="language">
+
+                ${getFlag(lang)}
+
+                ${lang}
+
+            </span>
+
+            `
 
         )
 
@@ -1082,19 +1635,26 @@ function createSongCard(song){
 
 
 
-    const styles = song.styles
+    const styles =
+
+        song.styles
 
         .map(style =>
 
-            `<span class="style">
+            `
+
+            <span class="style">
 
                 ${style}
 
-             </span>`
+            </span>
+
+            `
 
         )
 
         .join("");
+
 
 
 
@@ -1103,12 +1663,12 @@ function createSongCard(song){
     card.innerHTML = `
 
 
-        <div class="song-header">
+        <div class="song-top">
 
 
             <h3>
 
-                ${song.title}
+                ${escapeHTML(song.title)}
 
             </h3>
 
@@ -1116,7 +1676,7 @@ function createSongCard(song){
 
             <button
 
-                class="favorite-btn"
+                class="favorite-button"
 
                 data-id="${song.id}"
 
@@ -1126,9 +1686,13 @@ function createSongCard(song){
 
                     isFavorite(song.id)
 
-                    ? "❤️"
+                    ?
 
-                    : "🤍"
+                    "❤️"
+
+                    :
+
+                    "🤍"
 
                 }
 
@@ -1141,9 +1705,9 @@ function createSongCard(song){
 
 
 
-        <div class="artist">
+        <div class="artist-name">
 
-            ${song.artist}
+            ${escapeHTML(song.artist)}
 
         </div>
 
@@ -1151,14 +1715,26 @@ function createSongCard(song){
 
 
 
-        <div class="infos">
+        <div class="song-info">
 
 
-            <span>
+            ${
 
-                📅 ${song.year || ""}
+                song.year
 
-            </span>
+                ?
+
+                `<span>
+
+                    📅 ${song.year}
+
+                 </span>`
+
+                :
+
+                ""
+
+            }
 
 
 
@@ -1170,7 +1746,7 @@ function createSongCard(song){
 
                 `<span>
 
-                    🎤 Duo
+                    👥 Duo
 
                  </span>`
 
@@ -1179,8 +1755,6 @@ function createSongCard(song){
                 ""
 
             }
-
-
 
 
 
@@ -1231,17 +1805,14 @@ function createSongCard(song){
 
 
 
+    const button =
 
-    /*
-    Bouton favoris
-    */
+        card.querySelector(
 
+            ".favorite-button"
 
-    const button = card.querySelector(
+        );
 
-        ".favorite-btn"
-
-    );
 
 
 
@@ -1252,16 +1823,20 @@ function createSongCard(song){
         ()=>{
 
 
-            toggleFavorite(song.id);
+            toggleFavorite(
+
+                song.id
+
+            );
 
 
-            renderSongs(filteredSongs);
+
+            renderApplication();
 
 
         }
 
     );
-
 
 
 
@@ -1275,46 +1850,54 @@ function createSongCard(song){
 
 
 /*
---------------------------------------------------
- Badge langue
---------------------------------------------------
+=====================================================
+ SECURISATION TEXTE HTML
+=====================================================
 */
 
-function createLanguageBadge(language){
+
+function escapeHTML(text){
 
 
-    let flag = "🌐";
+    if(!text)
 
-
-
-    if(window.CONFIG && CONFIG.flags){
-
-
-        flag =
-
-            CONFIG.flags[language]
-
-            ||
-
-            flag;
-
-
-    }
+        return "";
 
 
 
+    return text
 
-    return `
+        .toString()
 
-        <span class="language">
+        .replace(
 
-            ${flag}
+            /[&<>"']/g,
 
-            ${language}
+            function(char){
 
-        </span>
 
-    `;
+                const map={
+
+                    "&":"&amp;",
+
+                    "<":"&lt;",
+
+                    ">":"&gt;",
+
+                    '"':"&quot;",
+
+                    "'":"&#039;"
+
+                };
+
+
+
+                return map[char];
+
+
+            }
+
+        );
 
 
 }
@@ -1322,33 +1905,270 @@ function createLanguageBadge(language){
 
 
 
+
 /*
---------------------------------------------------
- Affichage compteur
---------------------------------------------------
+=====================================================
+ DRAPEAUX LANGUES
+=====================================================
 */
 
-function renderCount(){
+
+function getFlag(language){
 
 
-    const counter = document.getElementById(
 
-        "result-count"
+    if(
+
+        typeof CONFIG !== "undefined"
+
+        &&
+
+        CONFIG.flags
+
+    ){
+
+
+        return CONFIG.flags[language]
+
+        ||
+
+        "🌍";
+
+
+    }
+
+
+
+    const flags={
+
+
+        "French":"🇫🇷",
+
+        "Français":"🇫🇷",
+
+        "English":"🇬🇧",
+
+        "Español":"🇪🇸",
+
+        "Spanish":"🇪🇸",
+
+        "Italian":"🇮🇹",
+
+        "Deutsch":"🇩🇪"
+
+    };
+
+
+
+    return flags[language]
+
+    ||
+
+    "🌍";
+
+
+}
+
+
+
+
+
+/*
+=====================================================
+ AFFICHAGE DES CHANSONS
+=====================================================
+*/
+
+
+function renderSongs(){
+
+
+    if(!DOM.songs)
+
+        return;
+
+
+
+
+    DOM.songs.innerHTML = "";
+
+
+
+    const pageSongs =
+
+        getCurrentPageSongs();
+
+
+
+
+
+    if(pageSongs.length === 0){
+
+
+        DOM.songs.innerHTML = `
+
+            <div class="empty">
+
+                Aucun titre trouvé
+
+            </div>
+
+        `;
+
+
+        return;
+
+
+    }
+
+
+
+
+
+    pageSongs.forEach(song=>{
+
+
+        DOM.songs.appendChild(
+
+            createSongCard(song)
+
+        );
+
+
+    });
+
+
+
+}
+
+
+
+
+
+/*
+=====================================================
+ PAGINATION
+=====================================================
+*/
+
+
+function calculatePages(){
+
+
+    totalPages = Math.ceil(
+
+        displayedSongs.length /
+
+        APP_SETTINGS.songsPerPage
 
     );
 
 
 
-    if(counter){
+    if(totalPages < 1)
+
+        totalPages = 1;
 
 
-        counter.textContent =
+}
 
-            filteredSongs.length
+
+
+
+
+function getCurrentPageSongs(){
+
+
+    calculatePages();
+
+
+
+    const start =
+
+        (
+
+            currentPage - 1
+
+        )
+
+        *
+
+        APP_SETTINGS.songsPerPage;
+
+
+
+
+    return displayedSongs.slice(
+
+        start,
+
+        start +
+
+        APP_SETTINGS.songsPerPage
+
+    );
+
+
+}
+
+
+
+
+
+function updatePagination(){
+
+
+
+    calculatePages();
+
+
+
+    if(DOM.pageNumber){
+
+
+        DOM.pageNumber.textContent =
+
+            "Page "
 
             +
 
-            " titres";
+            currentPage
+
+            +
+
+            " / "
+
+            +
+
+            totalPages;
+
+
+    }
+
+
+
+
+
+    if(DOM.prevPage){
+
+
+        DOM.prevPage.disabled =
+
+            currentPage <= 1;
+
+
+    }
+
+
+
+
+
+    if(DOM.nextPage){
+
+
+        DOM.nextPage.disabled =
+
+            currentPage >= totalPages;
 
 
     }
@@ -1359,296 +2179,116 @@ function renderCount(){
 
 
 
+
+function nextPage(){
+
+
+    if(currentPage < totalPages){
+
+
+        currentPage++;
+
+
+        renderApplication();
+
+
+    }
+
+
+}
+
+
+
+
+function previousPage(){
+
+
+    if(currentPage > 1){
+
+
+        currentPage--;
+
+
+        renderApplication();
+
+
+    }
+
+
+}
+
+
+
+
+
 /*
---------------------------------------------------
- Rafraîchissement complet
---------------------------------------------------
+=====================================================
+ RENDU GLOBAL
+=====================================================
 */
 
-function refreshDisplay(){
+
+function renderApplication(){
 
 
     renderSongs();
 
 
-    renderCount();
+    updatePagination();
+
+
+    updateCounter();
 
 
 }
 
 /*=====================================================
- Alex CARIBOU Karaoké V2.1
+ Alex CARIBOU Karaoké V2.2
  app.js
+
  PACK D
- Pagination + tri + initialisation
+ Connexions + Initialisation finale
 ======================================================*/
 
 
 /*
---------------------------------------------------
- Pagination
---------------------------------------------------
+=====================================================
+ EVENEMENTS RECHERCHE
+=====================================================
 */
 
-function getTotalPages(){
+
+function connectSearchEvents(){
 
 
-    return Math.ceil(
-
-        filteredSongs.length /
-
-        APP_CONFIG.songsPerPage
-
-    );
-
-
-}
-
-
-
-
-function getPageSongs(page=currentPage){
-
-
-    const start =
-
-        (page - 1)
-
-        *
-
-        APP_CONFIG.songsPerPage;
-
-
-
-    return filteredSongs.slice(
-
-        start,
-
-        start + APP_CONFIG.songsPerPage
-
-    );
-
-
-}
-
-
-
-
-function changePage(page){
-
-
-    const total = getTotalPages();
-
-
-
-    if(page < 1)
-
-        page = 1;
-
-
-
-    if(page > total)
-
-        page = total;
-
-
-
-    currentPage = page;
-
-
-
-    renderSongs(
-
-        getPageSongs()
-
-    );
-
-
-    renderPagination();
-
-
-}
-
-
-
-
-
-/*
---------------------------------------------------
- Affichage pagination
---------------------------------------------------
-*/
-
-function renderPagination(){
-
-
-    const container = document.getElementById(
-
-        "pagination"
-
-    );
-
-
-
-    if(!container)
+    if(!DOM.search)
 
         return;
 
 
 
-    const total = getTotalPages();
-
-
-
-    container.innerHTML = "";
-
-
-
-    if(total <= 1)
-
-        return;
-
-
-
-
-
-    for(let i=1;i<=total;i++){
-
-
-        const button = document.createElement(
-
-            "button"
-
-        );
-
-
-
-        button.textContent = i;
-
-
-
-        button.className =
-
-            i === currentPage
-
-            ?
-
-            "active"
-
-            :
-
-            "";
-
-
-
-        button.onclick = ()=>{
-
-
-            changePage(i);
-
-
-        };
-
-
-
-        container.appendChild(button);
-
-
-    }
-
-
-}
-
-
-
-
-
-/*
---------------------------------------------------
- Tri catalogue
---------------------------------------------------
-*/
-
-function sortCatalogue(mode){
-
-
-    filteredSongs = sortSongs(
-
-        filteredSongs,
-
-        mode
-
-    );
-
-
-
-    currentPage = 1;
-
-
-
-    renderSongs(
-
-        getPageSongs()
-
-    );
-
-
-    renderPagination();
-
-
-}
-
-
-
-
-
-/*
---------------------------------------------------
- Recherche depuis champ HTML
---------------------------------------------------
-*/
-
-function connectSearch(){
-
-
-    const input = document.getElementById(
-
-        "search"
-
-    );
-
-
-
-    if(!input)
-
-        return;
-
-
-
-    input.addEventListener(
+    DOM.search.addEventListener(
 
         "input",
 
         ()=>{
 
 
-            performSearch(
+            searchCatalogue(
 
-                input.value
-
-            );
-
-
-
-            renderSongs(
-
-                getPageSongs()
+                DOM.search.value
 
             );
 
 
+            showSuggestions(
 
-            renderPagination();
+                DOM.search.value
+
+            );
+
+
+            renderApplication();
 
 
         }
@@ -1661,31 +2301,88 @@ function connectSearch(){
 
 
 
-
 /*
---------------------------------------------------
- Connexion tri HTML
---------------------------------------------------
+=====================================================
+ EVENEMENTS FILTRES
+=====================================================
 */
 
-function connectSort(){
+
+function connectFilterEvents(){
 
 
-    const select = document.getElementById(
-
-        "sort"
-
-    );
+    const filters=[
 
 
+        DOM.languageFilter,
 
-    if(!select)
+        DOM.styleFilter,
+
+        DOM.artistFilter,
+
+        DOM.duoOnly,
+
+        DOM.hideExplicit,
+
+        DOM.favoritesOnly
+
+
+    ];
+
+
+
+    filters.forEach(filter=>{
+
+
+        if(filter){
+
+
+            filter.addEventListener(
+
+                "change",
+
+                ()=>{
+
+
+                    applyFilters();
+
+
+                    renderApplication();
+
+
+                }
+
+            );
+
+
+        }
+
+
+    });
+
+
+}
+
+
+
+
+/*
+=====================================================
+ EVENEMENT TRI
+=====================================================
+*/
+
+
+function connectSortEvent(){
+
+
+    if(!DOM.sortSelect)
 
         return;
 
 
 
-    select.addEventListener(
+    DOM.sortSelect.addEventListener(
 
         "change",
 
@@ -1694,7 +2391,7 @@ function connectSort(){
 
             sortCatalogue(
 
-                select.value
+                DOM.sortSelect.value
 
             );
 
@@ -1711,52 +2408,166 @@ function connectSort(){
 
 
 /*
---------------------------------------------------
- Initialisation application
---------------------------------------------------
+=====================================================
+ EVENEMENTS PAGINATION
+=====================================================
 */
 
-function initApp(){
+
+function connectPagination(){
+
+
+
+    if(DOM.nextPage){
+
+
+        DOM.nextPage.addEventListener(
+
+            "click",
+
+            ()=>{
+
+
+                nextPage();
+
+
+            }
+
+        );
+
+
+    }
+
+
+
+
+
+    if(DOM.prevPage){
+
+
+        DOM.prevPage.addEventListener(
+
+            "click",
+
+            ()=>{
+
+
+                previousPage();
+
+
+            }
+
+        );
+
+
+    }
+
+
+}
+
+
+
+
+
+/*
+=====================================================
+ FERMETURE SUGGESTIONS
+=====================================================
+*/
+
+
+function connectSuggestionClose(){
+
+
+    document.addEventListener(
+
+        "click",
+
+        (event)=>{
+
+
+            if(
+
+                DOM.suggestions
+
+                &&
+
+                !event.target.closest(
+
+                    ".search-section"
+
+                )
+
+            ){
+
+
+                DOM.suggestions.innerHTML="";
+
+
+            }
+
+
+        }
+
+    );
+
+
+}
+
+
+
+
+/*
+=====================================================
+ INITIALISATION COMPLETE
+=====================================================
+*/
+
+
+function initAlexCaribou(){
 
 
     console.log(
 
-        "🎤 Alex CARIBOU Karaoké V2.1"
+        "🎤 Alex CARIBOU Karaoké V2.2 démarrage"
 
     );
 
 
 
-    loadSongs();
+    cacheDOM();
 
 
 
-    filteredSongs = [
-
-        ...allSongs
-
-    ];
+    loadCatalogue();
 
 
 
-    connectSearch();
-
-
-    connectSort();
+    fillFilters();
 
 
 
-    renderSongs(
-
-        getPageSongs()
-
-    );
+    connectSearchEvents();
 
 
-    renderCount();
+
+    connectFilterEvents();
 
 
-    renderPagination();
+
+    connectSortEvent();
+
+
+
+    connectPagination();
+
+
+
+    connectSuggestionClose();
+
+
+
+    renderApplication();
 
 
 
@@ -1767,10 +2578,11 @@ function initApp(){
 
 
 /*
---------------------------------------------------
- Lancement automatique
---------------------------------------------------
+=====================================================
+ LANCEMENT APPLICATION
+=====================================================
 */
+
 
 document.addEventListener(
 
@@ -1779,7 +2591,7 @@ document.addEventListener(
     ()=>{
 
 
-        initApp();
+        initAlexCaribou();
 
 
     }
