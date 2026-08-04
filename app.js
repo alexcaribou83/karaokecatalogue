@@ -1349,7 +1349,7 @@ function fillFilters(){
         songsDatabase.forEach(song=>{
 
 
-            song.Styles.forEach(Styles=>{
+      (song.styles || []).forEach(style=>{
 
 
                 if(!Styles.includes(Styles))
