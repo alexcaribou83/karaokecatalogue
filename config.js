@@ -1,167 +1,275 @@
 /*=====================================================
- Alex CARIBOU Karaoké V2.1
+ Alex CARIBOU Karaoké V2.2
+ config.js
  Configuration générale
 ======================================================*/
 
+
 const CONFIG = {
 
-    /* ******************************
-       APPLICATION
-    ****************************** */
 
-    appName: "Alex CARIBOU Karaoké",
+    /*
+    ---------------------------------------
+    Informations application
+    ---------------------------------------
+    */
 
-    version: "2.1",
+    appName:
 
-    theme: "dark",
+        "Alex CARIBOU Karaoké",
 
-    songsPerPage: 24,
 
-    language: "fr",
+    version:
 
-    /* ******************************
-       OPTIONS
-    ****************************** */
+        "2.2",
 
-    enableFavorites: true,
 
-    enableSuggestions: true,
 
-    enableFuzzySearch: true,
+    /*
+    ---------------------------------------
+    Pagination
+    ---------------------------------------
+    */
 
-    enablePagination: true,
+    songsPerPage:
 
-    enableAnimations: true,
+        50,
 
-    /* ******************************
-       LANGUES
-    ****************************** */
 
-    allowedLanguages: [
 
-        "French",
-        "English",
-        "Spanish",
-        "Italian",
-        "German",
-        "Japanese",
-        "Chinese",
-        "Korean",
-        "Portuguese",
-        "Dutch"
+
+    /*
+    ---------------------------------------
+    Langues + drapeaux
+    ---------------------------------------
+    */
+
+    flags:{
+
+
+        "Français":
+            "🇫🇷",
+
+
+        "French":
+            "🇫🇷",
+
+
+        "English":
+            "🇬🇧",
+
+
+        "Anglais":
+            "🇬🇧",
+
+
+        "Español":
+            "🇪🇸",
+
+
+        "Spanish":
+            "🇪🇸",
+
+       "Espagnol":
+            "🇪🇸",
+
+
+
+        "Deutsch":
+            "🇩🇪",
+
+
+        "Allemand":
+            "🇩🇪",
+
+        "German":
+            "🇩🇪",
+
+
+        "Italiano":
+            "🇮🇹",
+
+
+        "Italien":
+            "🇮🇹",
+
+
+        "Portugais":
+            "🇵🇹",
+
+
+        "Portuguese":
+            "🇵🇹",
+
+
+        "Nederlands":
+            "🇳🇱",
+
+
+        "Dutch":
+            "🇳🇱",
+
+
+        "Svenska":
+            "🇸🇪",
+
+
+        "Swedish":
+            "🇸🇪",
+
+
+        "Dansk":
+            "🇩🇰",
+
+
+        "Danish":
+            "🇩🇰",
+
+
+        "Norsk":
+            "🇳🇴",
+
+
+        "Norwegian":
+            "🇳🇴",
+
+
+        "Polski":
+            "🇵🇱",
+
+
+        "Polish":
+            "🇵🇱",
+
+
+        "Русский":
+            "🇷🇺",
+
+
+        "Russian":
+            "🇷🇺",
+
+
+        "日本語":
+            "🇯🇵",
+
+
+        "Japanais":
+            "🇯🇵"
+
+
+    },
+
+
+
+
+
+    /*
+    ---------------------------------------
+    Styles principaux
+    ---------------------------------------
+    */
+
+    defaultStyles:[
+
+
+        "Pop",
+
+        "Rock",
+
+        "Dance",
+
+        "Disco",
+
+        "Jazz",
+
+        "Blues",
+
+        "Country",
+
+        "Rap",
+
+        "R&B",
+
+        "Soul",
+
+        "Funk",
+
+        "Reggae",
+
+        "Metal",
+
+        "Classique",
+
+        "Chanson française"
+
 
     ],
 
-    hiddenLanguages: [
 
-        "Arabic",
-        "Romanian",
-        "Turkish",
-        "Finnish"
 
-    ],
 
-    /* ******************************
-       DRAPEAUX
-    ****************************** */
 
-    flags: {
+    /*
+    ---------------------------------------
+    Options filtres
+    ---------------------------------------
+    */
 
-        "French":"🇫🇷",
-        "English":"🇬🇧",
-        "Spanish":"🇪🇸",
-        "Italian":"🇮🇹",
-        "German":"🇩🇪",
-        "Portuguese":"🇵🇹",
-        "Dutch":"🇳🇱",
-        "Japanese":"🇯🇵",
-        "Chinese":"🇨🇳",
-        "Korean":"🇰🇷"
+    filters:{
+
+
+        showDuo:true,
+
+
+        showExplicit:true,
+
+
+        showFavorites:true
+
 
     },
 
-    /* ******************************
-       TRI
-    ****************************** */
 
-    defaultSort:"titleAsc",
 
-    sortModes:{
 
-        titleAsc:"Titre A → Z",
 
-        titleDesc:"Titre Z → A",
+    /*
+    ---------------------------------------
+    Recherche
+    ---------------------------------------
+    */
 
-        artistAsc:"Artiste A → Z",
+    search:{
 
-        artistDesc:"Artiste Z → A",
 
-        yearAsc:"Année ↑",
+        minCharacters:2,
 
-        yearDesc:"Année ↓"
 
-    },
+        maxSuggestions:8
 
-    /* ******************************
-       BADGES
-    ****************************** */
-
-    badges:{
-
-        duo:"👥 Duo",
-
-        explicit:"🔞 Explicit",
-
-        favorite:"❤️",
-
-        year:"📅",
-
-        style:"🎵"
 
     },
 
-    /* ******************************
-       COULEURS
-    ****************************** */
 
-    colors:{
 
-        primary:"#ff2d55",
 
-        background:"#111111",
 
-        card:"#1b1b1b",
+    /*
+    ---------------------------------------
+    Stockage navigateur
+    ---------------------------------------
+    */
 
-        text:"#ffffff"
+    storage:{
+
+
+        favorites:
+
+            "alex_caribou_favorites"
+
 
     }
 
+
 };
-
-/*=====================================================
- Fonctions utilitaires
-======================================================*/
-
-function getFlag(language){
-
-    return CONFIG.flags[language] || "🌍";
-
-}
-
-function languageAllowed(language){
-
-    return CONFIG.allowedLanguages.includes(language);
-
-}
-
-function languageHidden(language){
-
-    return CONFIG.hiddenLanguages.includes(language);
-
-}
-
-function pageSize(){
-
-    return CONFIG.songsPerPage;
-
-}
