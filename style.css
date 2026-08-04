@@ -1,272 +1,386 @@
 /*=====================================================
- Alex CARIBOU Karaoké V2.1
+ Alex CARIBOU Karaoké V3.0
+ style.css
 ======================================================*/
 
-:root{
 
-    --bg:#111111;
-    --card:#1b1b1b;
-    --cardHover:#242424;
-
-    --primary:#ff2d55;
-
-    --text:#ffffff;
-
-    --text2:#bbbbbb;
-
-    --border:#333333;
-
-    --shadow:0 8px 25px rgba(0,0,0,.35);
-
-    --radius:16px;
-
-}
+/*=====================================================
+ RESET GENERAL
+======================================================*/
 
 *{
-
-    margin:0;
-
-    padding:0;
 
     box-sizing:border-box;
 
 }
 
+
 body{
 
-    background:var(--bg);
+    margin:0;
 
-    color:var(--text);
+    font-family:
+    "Poppins",
+    Arial,
+    sans-serif;
 
-    font-family:Poppins,sans-serif;
+    background:#111;
+
+    color:#fff;
 
 }
 
-/****************************************************/
+
+button,
+input,
+select{
+
+    font-family:inherit;
+
+}
+
+
+
+/*=====================================================
+ HEADER
+======================================================*/
 
 .topbar{
 
-    position:sticky;
+    background:
 
-    top:0;
+    linear-gradient(
+        135deg,
+        #1f1f1f,
+        #333
+    );
 
-    z-index:999;
+    padding:20px;
 
-    background:#181818;
+    text-align:center;
 
-    padding:25px;
-
-    border-bottom:1px solid var(--border);
+    box-shadow:
+    0 4px 15px rgba(0,0,0,.4);
 
 }
+
 
 .topbar h1{
 
-    font-size:34px;
+    margin:0;
 
-    color:var(--primary);
-
-}
-
-.topbar p{
-
-    color:var(--text2);
-
-    margin-top:5px;
+    font-size:28px;
 
 }
 
-/****************************************************/
+
+#songCount{
+
+    margin-top:8px;
+
+    color:#bbb;
+
+}
+
+
+
+
+
+/*=====================================================
+ CONTAINER
+======================================================*/
 
 .container{
 
-    width:min(1500px,95%);
+    width:95%;
+
+    max-width:1400px;
 
     margin:auto;
 
-    padding:25px;
+    padding:20px 0;
 
 }
 
-/****************************************************/
+
+
+
+
+/*=====================================================
+ RECHERCHE
+======================================================*/
 
 .search-section{
+
+    position:relative;
 
     margin-bottom:20px;
 
 }
+
 
 #search{
 
     width:100%;
 
-    padding:18px;
+    padding:15px 20px;
+
+    border-radius:30px;
 
     border:none;
 
-    border-radius:14px;
-
-    background:#202020;
-
-    color:white;
-
-    font-size:18px;
-
-}
-
-#search:focus{
+    font-size:16px;
 
     outline:none;
 
-    background:#282828;
-
 }
 
-/****************************************************/
 
-.filters{
 
-    display:grid;
 
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 
-    gap:15px;
-
-    margin-bottom:20px;
-
-}
-
-.filters select{
-
-    padding:14px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:#202020;
-
-    color:white;
-
-    cursor:pointer;
-
-    font-size:15px;
-
-}
-
-/****************************************************/
-
-.options{
-
-    display:flex;
-
-    gap:25px;
-
-    flex-wrap:wrap;
-
-    margin-bottom:25px;
-
-}
-
-.options label{
-
-    cursor:pointer;
-
-    color:var(--text2);
-
-}
-
-/****************************************************/
+/*=====================================================
+ SUGGESTIONS
+======================================================*/
 
 .suggestions{
 
-    display:none;
+    position:absolute;
 
-    background:#202020;
+    width:100%;
 
-    border-radius:12px;
+    background:#222;
 
-    margin-bottom:20px;
+    z-index:20;
+
+    border-radius:0 0 12px 12px;
 
     overflow:hidden;
 
 }
 
-.suggestion{
 
-    padding:14px 18px;
+
+.suggestion-item{
+
+    padding:12px 18px;
+
+    cursor:pointer;
+
+    border-bottom:
+
+    1px solid #333;
+
+}
+
+
+
+.suggestion-item:hover{
+
+    background:#444;
+
+}
+
+
+
+
+
+/*=====================================================
+ FILTRES
+======================================================*/
+
+.filters{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+
+.filters select{
+
+    flex:1;
+
+    min-width:180px;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    border:none;
+
+}
+
+
+
+
+
+/*=====================================================
+ OPTIONS
+======================================================*/
+
+.options{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:20px;
+
+    margin-bottom:25px;
+
+}
+
+
+.options label{
+
+    background:#222;
+
+    padding:10px 15px;
+
+    border-radius:20px;
 
     cursor:pointer;
 
 }
 
-.suggestion:hover{
 
-    background:#303030;
 
-}
 
-/****************************************************/
+
+/*=====================================================
+ GRILLE CHANSONS
+======================================================*/
 
 .songs-grid{
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+    grid-template-columns:
+
+    repeat(
+        auto-fill,
+        minmax(280px,1fr)
+    );
 
     gap:20px;
 
 }
 
-/****************************************************/
 
-.song{
 
-    background:var(--card);
 
-    border-radius:var(--radius);
 
-    padding:20px;
+/*=====================================================
+ CARTE CHANSON
+======================================================*/
 
-    transition:.25s;
+.song-card{
 
-    border:1px solid var(--border);
+    background:#202020;
 
-    box-shadow:var(--shadow);
+    border-radius:18px;
+
+    padding:18px;
+
+    box-shadow:
+
+    0 5px 15px rgba(0,0,0,.35);
+
+    transition:.2s;
 
 }
 
-.song:hover{
+
+
+.song-card:hover{
 
     transform:translateY(-4px);
 
-    background:var(--cardHover);
+}
 
-    border-color:var(--primary);
+
+
+
+
+.song-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:10px;
 
 }
 
-.song-title{
 
-    font-size:22px;
 
-    font-weight:600;
+.song-header h3{
+
+    margin:0;
+
+    font-size:19px;
 
 }
 
-.song-artist{
 
-    color:var(--primary);
 
-    margin-top:8px;
+.favorite-button{
 
-    margin-bottom:18px;
+    border:none;
+
+    background:none;
+
+    font-size:25px;
+
+    cursor:pointer;
+
+}
+
+
+
+
+
+.artist{
+
+    margin-top:10px;
+
+    color:#ddd;
 
     font-weight:500;
 
 }
 
-.badges{
+
+
+
+
+.details{
+
+    margin-top:15px;
+
+    color:#aaa;
+
+    font-size:14px;
+
+}
+
+
+
+
+
+/*=====================================================
+ STYLES
+======================================================*/
+
+.styles{
+
+    margin-top:15px;
 
     display:flex;
 
@@ -276,37 +390,27 @@ body{
 
 }
 
-.badge{
 
-    background:#2b2b2b;
 
-    padding:7px 13px;
+.style-tag{
 
-    border-radius:30px;
+    background:#444;
 
-    font-size:13px;
+    padding:5px 10px;
 
-}
+    border-radius:15px;
 
-.favorite{
-
-    float:right;
-
-    font-size:28px;
-
-    cursor:pointer;
-
-    user-select:none;
+    font-size:12px;
 
 }
 
-.favorite.active{
 
-    color:gold;
 
-}
 
-/****************************************************/
+
+/*=====================================================
+ PAGINATION
+======================================================*/
 
 .pagination{
 
@@ -318,96 +422,119 @@ body{
 
     gap:20px;
 
-    margin:35px 0;
+    margin:30px 0;
 
 }
 
-.pagination button{
 
-    background:var(--primary);
 
-    color:white;
+.page-button{
+
+    padding:10px 20px;
 
     border:none;
 
-    border-radius:10px;
-
-    padding:12px 18px;
+    border-radius:25px;
 
     cursor:pointer;
 
-}
+    background:#fff;
 
-.pagination button:hover{
-
-    opacity:.85;
+    color:#111;
 
 }
 
-/****************************************************/
 
-footer{
+
+.page-button:disabled{
+
+    opacity:.4;
+
+    cursor:not-allowed;
+
+}
+
+
+
+
+
+/*=====================================================
+ FOOTER
+======================================================*/
+
+.footer{
 
     text-align:center;
 
-    padding:30px;
+    padding:20px;
 
-    color:#777;
-
-}
-
-/****************************************************/
-
-@media(max-width:900px){
-
-.filters{
-
-grid-template-columns:1fr;
+    color:#999;
 
 }
 
-.options{
 
-flex-direction:column;
 
-gap:10px;
 
-}
 
-.topbar h1{
+/*=====================================================
+ MESSAGE VIDE
+======================================================*/
 
-font-size:28px;
+.empty{
 
-}
+    grid-column:1/-1;
 
-}
+    text-align:center;
 
-@media(max-width:600px){
+    padding:40px;
 
-.container{
-
-padding:15px;
+    color:#aaa;
 
 }
 
-.song{
 
-padding:16px;
 
-}
 
-.song-title{
 
-font-size:20px;
+/*=====================================================
+ MOBILE
+======================================================*/
 
-}
 
-#search{
+@media(max-width:700px){
 
-font-size:16px;
 
-padding:16px;
+    .topbar h1{
 
-}
+        font-size:22px;
+
+    }
+
+
+
+    .filters select{
+
+        width:100%;
+
+    }
+
+
+
+    .options{
+
+        flex-direction:column;
+
+    }
+
+
+
+    .songs-grid{
+
+        grid-template-columns:
+
+        1fr;
+
+    }
+
 
 }
