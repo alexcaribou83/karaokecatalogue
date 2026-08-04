@@ -1191,25 +1191,19 @@ function applyFilters(){
     */
 
 
-    if(
+if(
+    DOM.hideExplicit
+    &&
+    DOM.hideExplicit.checked
+){
 
-        DOM.hideExplicit
+    result = result.filter(song =>
 
-        &&
+        !song.explicit
 
-        DOM.hideExplicit.checked
+    );
 
-    ){
-
-
-        result = result.filter(song =>
-
-            song.explicit === false
-
-        );
-
-
-    }
+}
 
 
 
