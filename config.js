@@ -1,240 +1,167 @@
-/* =====================================================
-   Alex Karaoke V2.1
-   config.js
-
-   Configuration générale de l'application
-===================================================== */
-
+/*=====================================================
+ Alex CARIBOU Karaoké V2.1
+ Configuration générale
+======================================================*/
 
 const CONFIG = {
 
-
-    /* =========================
+    /* ******************************
        APPLICATION
-    ========================= */
+    ****************************** */
 
-
-    appName: "Alex CARIBOU Karaoke V2.1",
-
+    appName: "Alex CARIBOU Karaoké",
 
     version: "2.1",
 
-
-
-    /* Nombre de chansons affichées
-       par page */
+    theme: "dark",
 
     songsPerPage: 24,
 
+    language: "fr",
 
+    /* ******************************
+       OPTIONS
+    ****************************** */
 
-    /* =========================
+    enableFavorites: true,
+
+    enableSuggestions: true,
+
+    enableFuzzySearch: true,
+
+    enablePagination: true,
+
+    enableAnimations: true,
+
+    /* ******************************
        LANGUES
-    ========================= */
-
-
-    /*
-       Langues conservées dans le catalogue
-
-       Tu peux en ajouter ou retirer
-       simplement ici.
-    */
-
+    ****************************** */
 
     allowedLanguages: [
 
-        "Français",
-       "French",
-
-        "Anglais",
-       "Espagnol",
-         
-        "Español",
-
+        "French",
+        "English",
         "Spanish",
-
-        "Italiano",
-
         "Italian",
-       "Italien",
-       "Allemand",
-
-        "Deutsch",
-
         "German",
-
-        "日本語",
-
         "Japanese",
-       "Japonais",
-
-        "한국어",
-
-        "Korean",
-       "Coréen",
-
-        "中文",
-       "Chinois",
-
         "Chinese",
-       "portugais"
+        "Korean",
+        "Portuguese",
+        "Dutch"
 
     ],
-
-
-
-    /*
-       Langues interdites
-
-       Elles ne seront jamais affichées.
-    */
-
 
     hiddenLanguages: [
 
         "Arabic",
-
-        "Arabe",
-
         "Romanian",
-
-        "Roumain",
-
         "Turkish",
-
-        "Turc",
-
-        "Finnish",
-
-        "Finnois"
+        "Finnish"
 
     ],
 
+    /* ******************************
+       DRAPEAUX
+    ****************************** */
 
-
-
-    /* =========================
-       DRAPEAUX AUTOMATIQUES
-    ========================= */
-
-
-    flags:{
-
-
-        "Français":"🇫🇷",
+    flags: {
 
         "French":"🇫🇷",
-
-
         "English":"🇬🇧",
-
-        "Anglais":"🇬🇧",
-
-
-        "Español":"🇪🇸",
-
         "Spanish":"🇪🇸",
-
-
-        "Italiano":"🇮🇹",
-
         "Italian":"🇮🇹",
-
-
-        "Deutsch":"🇩🇪",
-
         "German":"🇩🇪",
-
-
-        "日本語":"🇯🇵",
-
+        "Portuguese":"🇵🇹",
+        "Dutch":"🇳🇱",
         "Japanese":"🇯🇵",
-
-
-        "한국어":"🇰🇷",
-
-        "Korean":"🇰🇷",
-
-
-        "中文":"🇨🇳",
-
-        "Chinese":"🇨🇳"
-
+        "Chinese":"🇨🇳",
+        "Korean":"🇰🇷"
 
     },
 
+    /* ******************************
+       TRI
+    ****************************** */
 
+    defaultSort:"titleAsc",
 
+    sortModes:{
 
-    /* =========================
-       RECHERCHE
-    ========================= */
+        titleAsc:"Titre A → Z",
 
+        titleDesc:"Titre Z → A",
 
-    search:{
+        artistAsc:"Artiste A → Z",
 
+        artistDesc:"Artiste Z → A",
 
-        // ignore accents :
-        // été = ete
+        yearAsc:"Année ↑",
 
-        ignoreAccents:true,
-
-
-        // accepte petites fautes
-        // beatl = Beatles
-
-        fuzzySearch:true,
-
-
-        // nombre de caractères
-        // minimum avant recherche
-
-        minimumCharacters:1
-
+        yearDesc:"Année ↓"
 
     },
 
+    /* ******************************
+       BADGES
+    ****************************** */
 
+    badges:{
 
+        duo:"👥 Duo",
 
-    /* =========================
-       AFFICHAGE
-    ========================= */
+        explicit:"🔞 Explicit",
 
+        favorite:"❤️",
 
-    display:{
+        year:"📅",
 
-
-        showYear:true,
-
-
-        showLanguage:true,
-
-
-        showStyle:true,
-
-
-        showArtist:true,
-
-
-        showDuo:true,
-
-
-        showExplicit:false
-
+        style:"🎵"
 
     },
 
+    /* ******************************
+       COULEURS
+    ****************************** */
 
+    colors:{
 
+        primary:"#ff2d55",
 
-    /* =========================
-       TRI PAR DEFAUT
-    ========================= */
+        background:"#111111",
 
+        card:"#1b1b1b",
 
-    defaultSort:"titleAsc"
+        text:"#ffffff"
 
-
+    }
 
 };
+
+/*=====================================================
+ Fonctions utilitaires
+======================================================*/
+
+function getFlag(language){
+
+    return CONFIG.flags[language] || "🌍";
+
+}
+
+function languageAllowed(language){
+
+    return CONFIG.allowedLanguages.includes(language);
+
+}
+
+function languageHidden(language){
+
+    return CONFIG.hiddenLanguages.includes(language);
+
+}
+
+function pageSize(){
+
+    return CONFIG.songsPerPage;
+
+}
