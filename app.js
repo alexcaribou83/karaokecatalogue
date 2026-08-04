@@ -546,17 +546,17 @@ function prepareSong(raw,index){
 
 
 
-        Styles:
+       styles:
 
-            parseMultipleValues(
+    parseMultipleValues(
 
-                raw.Styles
+        raw.Styles
 
-                ||
+        ??
 
-                raw.Styles
+        raw.styles
 
-            ),
+    ),
 
 
 
