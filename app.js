@@ -252,7 +252,6 @@ function normalize(value){
 =====================================================
 */
 
-
 function parseMultipleValues(value){
 
 
@@ -261,14 +260,16 @@ function parseMultipleValues(value){
         return [];
 
 
-
     return value
 
         .toString()
 
-        .split(
-            /[,;|]/
-        )
+        .replace(/\r?\n/g,",")
+        .replace(/\//g,",")
+        .replace(/\|/g,",")
+        .replace(/;/g,",")
+
+        .split(",")
 
         .map(item =>
 
@@ -632,7 +633,9 @@ function loadCatalogue(){
     songsDatabase =
 
         songs.map(
-
+console.log(
+    songsDatabase.slice(0,5)
+);
             (song,index)=>
 
                 prepareSong(
