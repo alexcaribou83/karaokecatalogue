@@ -68,7 +68,7 @@ const DOM = {
         null,
 
 
-    styleFilter:
+    StylesFilter:
         null,
 
 
@@ -138,8 +138,8 @@ function cacheDOM(){
         document.getElementById("languageFilter");
 
 
-    DOM.styleFilter =
-        document.getElementById("styleFilter");
+    DOM.StylesFilter =
+        document.getElementById("StylesFilter");
 
 
     DOM.artistFilter =
@@ -537,7 +537,7 @@ function prepareSong(raw,index){
 
 
 
-        styles:
+        Styles:
 
             parseMultipleValues(
 
@@ -545,7 +545,7 @@ function prepareSong(raw,index){
 
                 ||
 
-                raw.styles
+                raw.Styles
 
             ),
 
@@ -1064,26 +1064,26 @@ function applyFilters(){
 
 
     /*
-    Style
+    Styles
     */
 
 
     if(
 
-        DOM.styleFilter
+        DOM.StylesFilter
 
         &&
 
-        DOM.styleFilter.value
+        DOM.StylesFilter.value
 
     ){
 
 
-        const style =
+        const Styles =
 
             normalize(
 
-                DOM.styleFilter.value
+                DOM.StylesFilter.value
 
             );
 
@@ -1092,14 +1092,14 @@ function applyFilters(){
         result = result.filter(song =>
 
 
-            song.styles.some(item =>
+            song.Styles.some(item =>
 
 
                 normalize(item)
 
                 ===
 
-                style
+                Styles
 
 
             )
@@ -1330,22 +1330,22 @@ function fillFilters(){
 
 
 
-    if(DOM.styleFilter){
+    if(DOM.StylesFilter){
 
 
-        const styles=[];
+        const Styles=[];
 
 
 
         songsDatabase.forEach(song=>{
 
 
-            song.styles.forEach(style=>{
+            song.Styles.forEach(Styles=>{
 
 
-                if(!styles.includes(style))
+                if(!Styles.includes(Styles))
 
-                    styles.push(style);
+                    Styles.push(Styles);
 
 
             });
@@ -1355,20 +1355,20 @@ function fillFilters(){
 
 
 
-        styles.sort();
+        Styles.sort();
 
 
 
-        styles.forEach(style=>{
+        Styles.forEach(Styles=>{
 
 
-            DOM.styleFilter.innerHTML +=
+            DOM.StylesFilter.innerHTML +=
 
             `
 
-            <option value="${style}">
+            <option value="${Styles}">
 
-                ${style}
+                ${Styles}
 
             </option>
 
@@ -1632,17 +1632,17 @@ function createSongCard(song){
 
 
 
-    const styles =
+    const Styles =
 
-        song.styles
+        song.Styles
 
-        .map(style =>
+        .map(Styles =>
 
             `
 
-            <span class="style">
+            <span class="Styles">
 
-                ${style}
+                ${Styles}
 
             </span>
 
@@ -1790,9 +1790,9 @@ function createSongCard(song){
 
 
 
-        <div class="styles">
+        <div class="Styles">
 
-            ${styles}
+            ${Styles}
 
         </div>
 
@@ -2313,7 +2313,7 @@ function connectFilterEvents(){
 
         DOM.languageFilter,
 
-        DOM.styleFilter,
+        DOM.StylesFilter,
 
         DOM.artistFilter,
 
