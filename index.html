@@ -5,21 +5,40 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>Alex CARIBOU Karaoké</title>
 
-    <meta name="theme-color" content="#151515">
+    <meta
+        name="theme-color"
+        content="#1e1e1e">
 
-    <link rel="manifest" href="manifest.json">
+    <meta
+        name="description"
+        content="Catalogue Karaoké Alex CARIBOU">
 
-    <link rel="Stylessheet" href="Styles.css">
+    <link
+        rel="manifest"
+        href="manifest.json">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="stylesheet"
+        href="style.css">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="Stylessheet">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
 </head>
 
@@ -27,11 +46,19 @@
 
 <header class="topbar">
 
-    <div class="title">
+    <div class="logo">
 
-        <h1>🎤 Alex CARIBOU Karaoké</h1>
+        <h1>
 
-        <p id="songCount">Chargement du catalogue...</p>
+            🎤 Alex CARIBOU Karaoké
+
+        </h1>
+
+        <p id="songCount">
+
+            Chargement...
+
+        </p>
 
     </div>
 
@@ -39,65 +66,125 @@
 
 <main class="container">
 
-    <!-- Recherche -->
+    <!-- ========================= -->
+    <!-- Recherche                 -->
+    <!-- ========================= -->
 
     <section class="search-section">
 
         <input
+
             id="search"
+
             type="text"
-            placeholder="🔍 Rechercher un titre ou un artiste..."
-            autocomplete="off">
+
+            autocomplete="off"
+
+            spellcheck="false"
+
+            placeholder="🔍 Rechercher un titre, un artiste..."
+
+        >
+
+        <div
+
+            id="suggestions"
+
+            class="suggestions"
+
+        ></div>
 
     </section>
 
-    <!-- Filtres -->
+    <!-- ========================= -->
+    <!-- Ligne filtres             -->
+    <!-- ========================= -->
 
     <section class="filters">
 
         <select id="languageFilter">
 
-            <option value="">🌍 Toutes les langues</option>
+            <option value="">
+
+                🌍 Toutes les langues
+
+            </option>
 
         </select>
 
-        <select id="StylesFilter">
+        <select id="styleFilter">
 
-            <option value="">🎵 Tous les Styless</option>
+            <option value="">
+
+                🎵 Tous les styles
+
+            </option>
 
         </select>
 
         <select id="artistFilter">
 
-            <option value="">👤 Tous les artistes</option>
+            <option value="">
+
+                👤 Tous les artistes
+
+            </option>
 
         </select>
 
         <select id="sortSelect">
 
-            <option value="titleAsc">Titre A → Z</option>
+            <option value="titleAsc">
 
-            <option value="titleDesc">Titre Z → A</option>
+                Titre A → Z
 
-            <option value="artistAsc">Artiste A → Z</option>
+            </option>
 
-            <option value="artistDesc">Artiste Z → A</option>
+            <option value="titleDesc">
 
-            <option value="yearDesc">Année ↓</option>
+                Titre Z → A
 
-            <option value="yearAsc">Année ↑</option>
+            </option>
+
+            <option value="artistAsc">
+
+                Artiste A → Z
+
+            </option>
+
+            <option value="artistDesc">
+
+                Artiste Z → A
+
+            </option>
+
+            <option value="yearDesc">
+
+                Année ↓
+
+            </option>
+
+            <option value="yearAsc">
+
+                Année ↑
+
+            </option>
 
         </select>
 
     </section>
 
-    <!-- Options -->
+    <!-- ========================= -->
+    <!-- Options                   -->
+    <!-- ========================= -->
 
     <section class="options">
 
         <label>
 
-            <input type="checkbox" id="duoOnly">
+            <input
+                id="duoOnly"
+                type="checkbox">
 
             👥 Duo uniquement
 
@@ -105,7 +192,10 @@
 
         <label>
 
-            <input type="checkbox" id="hideExplicit" checked>
+            <input
+                id="hideExplicit"
+                type="checkbox"
+                checked>
 
             🚫 Masquer Explicit
 
@@ -113,43 +203,51 @@
 
         <label>
 
-            <input type="checkbox" id="favoritesOnly">
+            <input
+                id="favoritesOnly"
+                type="checkbox">
 
             ❤️ Favoris
 
         </label>
 
     </section>
+        <!-- ========================= -->
+    <!-- Résultats                 -->
+    <!-- ========================= -->
 
-    <!-- Suggestions de recherche -->
-
-    <div id="suggestions" class="suggestions"></div>
-
-    <!-- Cartes chansons -->
-
-    <section id="songs" class="songs-grid">
+    <section
+        id="songs"
+        class="songs-grid">
 
     </section>
 
-    <!-- Pagination -->
+    <!-- ========================= -->
+    <!-- Pagination                -->
+    <!-- ========================= -->
 
     <section class="pagination">
 
-        <button id="prevPage">
+        <button
+            id="prevPage"
+            class="page-button">
 
-            ◀
+            ◀ Précédent
 
         </button>
 
-        <span id="pageNumber">
+        <span
+            id="pageNumber">
 
-            Page 1
+            Page 1 / 1
 
         </span>
 
-        <button id="nextPage">
+        <button
+            id="nextPage"
+            class="page-button">
 
-            ▶
+            Suivant ▶
 
         </button>
 
@@ -157,17 +255,22 @@
 
 </main>
 
-<footer>
+<footer class="footer">
 
     <p>
 
-        Alex CARIBOU Karaoké • Version 2.1
+        © Alex CARIBOU Karaoké
+        <span id="appVersion">
+            Version 3.0
+        </span>
 
     </p>
 
 </footer>
 
-<!-- Chargement des données -->
+<!-- ========================= -->
+<!-- Scripts                   -->
+<!-- ========================= -->
 
 <script src="config.js"></script>
 
@@ -176,6 +279,50 @@
 <script src="search.js"></script>
 
 <script src="app.js"></script>
+
+<script>
+
+if("serviceWorker" in navigator){
+
+    window.addEventListener(
+
+        "load",
+
+        ()=>{
+
+            navigator.serviceWorker.register(
+
+                "./sw.js"
+
+            )
+
+            .then(()=>{
+
+                console.log(
+
+                    "Service Worker chargé"
+
+                );
+
+            })
+
+            .catch(error=>{
+
+                console.error(
+
+                    error
+
+                );
+
+            });
+
+        }
+
+    );
+
+}
+
+</script>
 
 </body>
 
