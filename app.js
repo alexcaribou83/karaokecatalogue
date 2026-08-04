@@ -260,32 +260,41 @@ function parseMultipleValues(value){
         return [];
 
 
+
+    // Si le CSV a déjà créé un tableau
+
+    if(Array.isArray(value)){
+
+        return value
+
+            .map(item => item.trim())
+
+            .filter(item => item.length > 0);
+
+    }
+
+
+
     return value
 
         .toString()
 
-        .replace(/\r?\n/g,",")
-        .replace(/\//g,",")
-        .replace(/\|/g,",")
-        .replace(/;/g,",")
+        .replace(/\r/g,"")
 
+        .replace(/\n/g,",")
+        
+        .replace(/\|/g,",")
+        
+        .replace(/;/g,",")
+        
         .split(",")
 
-        .map(item =>
+        .map(item => item.trim())
 
-            item.trim()
-
-        )
-
-        .filter(item =>
-
-            item.length > 0
-
-        );
+        .filter(item => item.length > 0);
 
 
 }
-
 
 
 
