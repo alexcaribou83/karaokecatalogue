@@ -1,1 +1,4 @@
-const q=document.getElementById('q'),l=document.getElementById('list');function r(a){l.innerHTML=a.map(s=>`<tr><td>${s.title}</td><td>${s.artist}</td><td>${s.language}</td><td>${s.style}</td></tr>`).join('')}q.oninput=()=>{let t=q.value.toLowerCase();r(songs.filter(s=>s.title.toLowerCase().includes(t)||s.artist.toLowerCase().includes(t)))};r(songs);
+const q=document.getElementById('q'),l=document.getElementById('list');
+function r(a){l.innerHTML=a.map(s=>`<tr><td>${s.title}</td>
+<td>${s.artist}</td><td>${s.language}</td><td>${s.Category}</td></tr>`).join('')}q.oninput=()=>{let t=q.value.toLowerCase();
+                                                                                                r(songs.filter(s=>s.title.toLowerCase().includes(t)||s.artist.toLowerCase().includes(t)))};r(songs);
