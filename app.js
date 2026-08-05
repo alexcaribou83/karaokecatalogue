@@ -1,85 +1,43 @@
 /*=====================================================
  Alex CARIBOU Karaoké V3.0
  app.js
-
  PACK A
  Base application + données
 ======================================================*/
-
-
 "use strict";
-
-
-
 /*
 =====================================================
  VARIABLES PRINCIPALES
 =====================================================
 */
-
-
 let allSongs = [];
-
 let filteredSongs = [];
-
 let currentPage = 1;
-
 let totalPages = 1;
-
-
 const ITEMS_PER_PAGE = 50;
-
-
 let favorites = [];
-
-
-
-
-
 /*
 =====================================================
  ELEMENTS HTML
 =====================================================
 */
-
-
 const DOM = {
-
-
     search:null,
-
     suggestions:null,
-
     songs:null,
-
     songCount:null,
-
     languageFilter:null,
-
     styleFilter:null,
-
     artistFilter:null,
-
     sortSelect:null,
-
     duoOnly:null,
-
     hideExplicit:null,
-
     favoritesOnly:null,
-
     prevPage:null,
-
     nextPage:null,
-
     pageNumber:null
 
-
 };
-
-
-
-
 
 /*
 =====================================================
@@ -87,71 +45,51 @@ const DOM = {
 =====================================================
 */
 
-
 function initDOM(){
-
 
     DOM.search =
         document.getElementById("search");
 
-
     DOM.suggestions =
         document.getElementById("suggestions");
-
 
     DOM.songs =
         document.getElementById("songs");
 
-
     DOM.songCount =
         document.getElementById("songCount");
-
 
     DOM.languageFilter =
         document.getElementById("languageFilter");
 
-
     DOM.styleFilter =
         document.getElementById("styleFilter");
-
 
     DOM.artistFilter =
         document.getElementById("artistFilter");
 
-
     DOM.sortSelect =
         document.getElementById("sortSelect");
-
 
     DOM.duoOnly =
         document.getElementById("duoOnly");
 
-
     DOM.hideExplicit =
         document.getElementById("hideExplicit");
-
 
     DOM.favoritesOnly =
         document.getElementById("favoritesOnly");
 
-
     DOM.prevPage =
         document.getElementById("prevPage");
-
 
     DOM.nextPage =
         document.getElementById("nextPage");
 
-
     DOM.pageNumber =
         document.getElementById("pageNumber");
 
-
 }
-
-
-
-
 
 /*
 =====================================================
@@ -159,14 +97,11 @@ function initDOM(){
 =====================================================
 */
 
-
 function normalizeText(text){
-
 
     if(!text)
 
         return "";
-
 
     return text
 
@@ -186,12 +121,7 @@ function normalizeText(text){
 
         .trim();
 
-
 }
-
-
-
-
 
 /*
 =====================================================
@@ -210,7 +140,6 @@ function loadFavorites(){
             "alex_caribou_favorites"
 
         );
-
 
 
     if(saved){
@@ -239,16 +168,11 @@ function loadFavorites(){
 
 }
 
-
-
-
-
 /*
 =====================================================
  SAUVEGARDE FAVORIS
 =====================================================
 */
-
 
 function saveFavorites(){
 
@@ -265,11 +189,7 @@ function saveFavorites(){
 
     );
 
-
 }
-
-
-
 
 
 /*
@@ -278,9 +198,7 @@ function saveFavorites(){
 =====================================================
 */
 
-
 function isFavorite(id){
-
 
     return favorites.includes(id);
 
@@ -288,15 +206,11 @@ function isFavorite(id){
 }
 
 
-
-
-
 /*
 =====================================================
  AJOUT / SUPPRESSION FAVORI
 =====================================================
 */
-
 
 function toggleFavorite(id){
 
@@ -327,16 +241,11 @@ function toggleFavorite(id){
 
 }
 
-
-
-
-
 /*
 =====================================================
  PREPARATION CATALOGUE
 =====================================================
 */
-
 
 function prepareSongs(){
 
@@ -353,85 +262,36 @@ function prepareSongs(){
 
 
         return;
-
-
     }
 
-
-
-
     allSongs = songs.map(song => ({
-
-
         id:
-
             song.id,
-
-
         title:
-
             song.title || "",
-
-
         artist:
-
             song.artist || "",
-
-
         year:
-
             song.year || 0,
-
-
         language:
-
             song.language || "",
-
-
         category:
-
             Array.isArray(song.category)
-
             ?
-
             song.category
-
             :
-
             [],
-
-
         duo:
-
             song.duo === true,
-
-
         explicit:
-
             song.explicit === true,
-
-
         favorite:
-
             isFavorite(song.id)
-
-
 
     }));
 
-
-
-
-
     filteredSongs = [...allSongs];
-
-
-
 }
-
-
-
-
 
 /*
 =====================================================
@@ -439,25 +299,19 @@ function prepareSongs(){
 =====================================================
 */
 
-
 function updateCounter(){
-
 
     if(!DOM.songCount)
 
         return;
 
-
-
     DOM.songCount.textContent =
-
 
         filteredSongs.length
 
         +
 
         " chansons disponibles";
-
 }
 /*=====================================================
  Alex CARIBOU Karaoké V3.0
@@ -466,30 +320,21 @@ function updateCounter(){
  Recherche + filtres + tri
 ======================================================*/
 
-
-
 /*
 =====================================================
  RECHERCHE SIMPLE
 =====================================================
 */
 
-
 function searchInSongs(list, query){
-
 
     if(!query || query.trim()==="")
 
         return list;
 
-
-
     const q = normalizeText(query);
 
-
-
     return list.filter(song=>{
-
 
         return (
 
@@ -514,10 +359,6 @@ function searchInSongs(list, query){
 
 }
 
-
-
-
-
 /*
 =====================================================
  SUGGESTIONS
@@ -532,8 +373,6 @@ function getSuggestions(query){
 
         return [];
 
-
-
     return searchInSongs(
 
         allSongs,
@@ -544,11 +383,7 @@ function getSuggestions(query){
 
     .slice(0,8);
 
-
 }
-
-
-
 
 
 /*
@@ -557,24 +392,17 @@ function getSuggestions(query){
 =====================================================
 */
 
-
 function applyFilters(){
 
 
-
     let result = [...allSongs];
-
-
-
 
 
     /*
     Recherche
     */
 
-
     if(DOM.search && DOM.search.value){
-
 
         result = searchInSongs(
 
@@ -588,13 +416,9 @@ function applyFilters(){
     }
 
 
-
-
-
     /*
     Langue
     */
-
 
     if(
 
@@ -631,12 +455,6 @@ function applyFilters(){
 
 
     }
-
-
-
-
-
-
 
     /*
     Style / catégorie
@@ -676,25 +494,16 @@ function applyFilters(){
 
                 style
 
-
             );
-
 
         });
 
 
-
     }
-
-
-
-
-
 
     /*
     Artiste
     */
-
 
     if(
 
@@ -716,7 +525,6 @@ function applyFilters(){
             );
 
 
-
         result = result.filter(song=>
 
 
@@ -732,14 +540,9 @@ function applyFilters(){
 
     }
 
-
-
-
-
     /*
     Duo uniquement
     */
-
 
     if(
 
@@ -763,11 +566,6 @@ function applyFilters(){
 
     }
 
-
-
-
-
-
     /*
     Masquer Explicit
     */
@@ -783,7 +581,6 @@ function applyFilters(){
 
     ){
 
-
         result = result.filter(song=>
 
 
@@ -794,11 +591,6 @@ function applyFilters(){
 
 
     }
-
-
-
-
-
 
 
     /*
@@ -828,28 +620,14 @@ function applyFilters(){
 
     }
 
-
-
-
-
     filteredSongs = result;
 
-
-
     currentPage = 1;
-
-
 
     updateCounter();
 
 
 }
-
-
-
-
-
-
 
 /*
 =====================================================
@@ -857,21 +635,13 @@ function applyFilters(){
 =====================================================
 */
 
-
 function fillFilters(){
-
-
-
-
 
     /*
     LANGUES
     */
 
-
     if(DOM.languageFilter){
-
-
 
         const languages =
 
@@ -889,11 +659,7 @@ function fillFilters(){
 
             .sort();
 
-
-
-
         languages.forEach(language=>{
-
 
             DOM.languageFilter.innerHTML +=
 
@@ -907,64 +673,43 @@ function fillFilters(){
 
             `;
 
-
         });
 
 
     }
 
 
-
-
-
     /*
     STYLES
     */
 
-
     if(DOM.styleFilter){
-
-
 
         const styles=[];
 
-
-
         allSongs.forEach(song=>{
 
-
             song.category.forEach(style=>{
-
 
                 if(!styles.includes(style))
 
                     styles.push(style);
 
-
             });
-
 
         });
 
 
-
-
         styles.sort();
-
 
 
         styles.forEach(style=>{
 
 
             DOM.styleFilter.innerHTML +=
-
-
             `
-
             <option value="${style}">
-
                 ${
-
                     typeof translateStyle === "function"
 
                     ?
@@ -981,26 +726,16 @@ function fillFilters(){
 
             `;
 
-
-
         });
 
 
     }
 
-
-
-
-
-
-
     /*
     ARTISTES
     */
 
-
     if(DOM.artistFilter){
-
 
 
         const artists =
@@ -1018,8 +753,6 @@ function fillFilters(){
             .filter(Boolean)
 
             .sort();
-
-
 
 
         artists.forEach(artist=>{
@@ -1050,27 +783,17 @@ function fillFilters(){
 }
 
 
-
-
-
-
-
 /*
 =====================================================
  TRI
 =====================================================
 */
 
-
 function sortSongs(mode){
-
-
 
     switch(mode){
 
-
         case "titleAsc":
-
 
             filteredSongs.sort((a,b)=>
 
@@ -1084,12 +807,7 @@ function sortSongs(mode){
 
         break;
 
-
-
-
-
         case "titleDesc":
-
 
             filteredSongs.sort((a,b)=>
 
@@ -1102,10 +820,6 @@ function sortSongs(mode){
             );
 
         break;
-
-
-
-
 
         case "artistAsc":
 
@@ -1123,12 +837,7 @@ function sortSongs(mode){
 
         break;
 
-
-
-
-
         case "artistDesc":
-
 
             filteredSongs.sort((a,b)=>
 
@@ -1143,12 +852,7 @@ function sortSongs(mode){
 
         break;
 
-
-
-
-
         case "yearAsc":
-
 
             filteredSongs.sort((a,b)=>
 
@@ -1158,10 +862,6 @@ function sortSongs(mode){
 
 
         break;
-
-
-
-
 
         case "yearDesc":
 
@@ -1178,7 +878,6 @@ function sortSongs(mode){
 
     }
 
-
 }
 /*=====================================================
  Alex CARIBOU Karaoké V3.0
@@ -1187,16 +886,11 @@ function sortSongs(mode){
  Affichage + cartes + pagination
 ======================================================*/
 
-
-
-
-
 /*
 =====================================================
  ECHAPPEMENT HTML
 =====================================================
 */
-
 
 function escapeHTML(text){
 
