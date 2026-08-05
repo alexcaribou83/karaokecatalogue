@@ -5,6 +5,7 @@
  Base application + données
 ======================================================*/
 "use strict";
+alert("app.js chargé");
 /*
 =====================================================
  VARIABLES PRINCIPALES
