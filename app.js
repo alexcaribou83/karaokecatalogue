@@ -20,7 +20,6 @@ let favorites = JSON.parse(
     localStorage.getItem("karaokeFavorites") || "[]"
 );
 
-
 /* ================================
    Initialisation
 ================================ */
