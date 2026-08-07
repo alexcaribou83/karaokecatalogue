@@ -371,14 +371,13 @@ function displaySongs() {
         <div class="song-info">
 
 
-            <h3>
-                ${escapeHTML(song.title)}
-            </h3>
+<h3>
+    ${escapeHTML(song.artist || "")}
+</h3>
 
-
-            <p class="artist">
-                ${escapeHTML(song.artist || "")}
-            </p>
+<p class="artist">
+    ${escapeHTML(song.title)}
+</p>
 
 
             <div class="tags">
