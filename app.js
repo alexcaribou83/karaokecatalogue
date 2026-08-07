@@ -44,9 +44,29 @@ function loadSongs() {
 
     if (typeof songs !== "undefined") {
 
-        allSongs = songs;
+        allSongs = [...songs];
 
-        filteredSongs = [...allSongs];
+allSongs.sort((a, b) => {
+
+    const artistCompare = (a.artist || "").localeCompare(
+        b.artist || "",
+        "fr",
+        { sensitivity: "base" }
+    );
+
+    if (artistCompare !== 0) {
+        return artistCompare;
+    }
+
+    return (a.title || "").localeCompare(
+        b.title || "",
+        "fr",
+        { sensitivity: "base" }
+    );
+
+});
+
+filteredSongs = [...allSongs];
 
     } else {
 
