@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Alex CARIBOU Karaoké
+    </title>
+
+
+    <link rel="stylesheet" href="style.css">
+
+
+    <link rel="manifest" href="manifest.json">
+
+
+    <meta name="theme-color" content="#111111">
+
+</head>
+
+
+
+<body>
+
+
+<header class="header">
+
+
+    <h1>
+        🎤 Alex CARIBOU Karaoké
+    </h1>
+
+
+    <p>
+        Catalogue chansons
+    </p>
+
+
+</header>
+
+
+
+
+<main>
+
+
+<section class="search-area">
+
+
+    <input
+        id="search"
+        type="search"
+        placeholder="Rechercher un titre, artiste..."
+        autocomplete="off"
+    >
+
+
+
+    <div class="filters">
+
+
+        <select id="languageFilter">
+
+            <option value="all">
+                Toutes les langues
+            </option>
+
+        </select>
+
+
+
+        <select id="styleFilter">
+
+            <option value="all">
+                Tous les styles
+            </option>
+
+        </select>
+
+
+
+        <select id="duoFilter">
+
+            <option value="all">
+                Duo / Solo
+            </option>
+
+            <option value="true">
+                Duo uniquement
+            </option>
+
+            <option value="false">
+                Solo uniquement
+            </option>
+
+        </select>
+
+
+
+
+        <select id="explicitFilter">
+
+            <option value="all">
+                Explicit / Clean
+            </option>
+
+
+            <option value=true>
+                Explicit
+            </option>
+
+
+            <option value="false">
+                Clean
+            </option>
+
+
+        </select>
+
+
+
+    </div>
+
+
+
+
+    <div class="actions">
+
+
+        <button id="showAll">
+
+            📚 Tout le catalogue
+
+        </button>
+
+
+
+        <button id="showFavorites">
+
+            ⭐ Favoris
+
+        </button>
+
+
+
+        <button onclick="resetFilters()">
+
+            🔄 Reset
+
+        </button>
+
+
+    </div>
+
+
+
+    <div class="counter">
+
+        <span id="resultCount">
+            0 titre(s)
+        </span>
+
+    </div>
+
+
+</section>
+
+
+
+
+
+<section
+    id="songList"
+    class="song-list"
+>
+
+
+</section>
+
+
+
+
+
+<section
+    id="pagination"
+    class="pagination"
+>
+
+
+</section>
+
+
+
+</main>
+
+
+
+
+<footer>
+
+
+    <p>
+        Alex CARIBOU Karaoké © 2026
+    </p>
+
+
+</footer>
+
+
+
+
+
+<script src="config.js"></script>
+
+<script src="songs.js"></script>
+
+<script src="app.js"></script>
+
+
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+
+    navigator.serviceWorker.register(
+        "sw.js"
+    );
+
+
+}
+
+
+</script>
+
+
+
+</body>
+
+</html>
