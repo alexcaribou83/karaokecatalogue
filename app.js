@@ -227,7 +227,7 @@ function applyFilters() {
         }
 
 
-
+/*
         if (language !== "all") {
 
             languageOK =
@@ -235,8 +235,22 @@ function applyFilters() {
 
         }
 
+*/
+if (language !== "all") {
 
+    const songLanguages =
+        Array.isArray(song.language)
+            ? song.language
+            : String(song.language)
+                .split(",")
+                .map(item => item.trim());
 
+    languageOK =
+        songLanguages.includes(language);
+
+}
+
+       
         if (style !== "all") {
 
             if (Array.isArray(song.style)) {
