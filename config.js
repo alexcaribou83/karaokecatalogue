@@ -41,48 +41,43 @@ const KARAOKE_CONFIG = {
    Langues + drapeaux
 ================================ */
 
+
 const LANGUAGES = {
 
-
-    "Français":
-        "🇫🇷",
-
-
-    "English":
-        "🇬🇧",
-
-
-    "Español":
-        "🇪🇸",
-
-
-    "Italiano":
-        "🇮🇹",
-
-
-    "Deutsch":
-        "🇩🇪",
-
-
-    "Português":
-        "🇵🇹",
-
-
-    "Nederlands":
-        "🇳🇱",
-
-
-    "日本語":
-        "🇯🇵",
-
-
-    "한국어":
-        "🇰🇷"
-
-
-
+    "French": "Français",
+    "English": "Anglais",
+    "German": "Allemand",
+    "Spanish": "Espagnol",
+    "Italian": "Italien",
+    "Portuguese": "Portugais",
+    "Dutch": "Néerlandais",
+    "Japanese": "Japonais",
+    "Korean": "Coréen",
+    "Chinese": "Chinois",
+    "Polish": "Polonais",
+    "Russian": "Russe",
+    "Czech": "Tchèque",
+    "Slovak": "Slovaque",
+    "Hungarian": "Hongrois",
+    "Romanian": "Roumain",
+    "Croatian": "Croate",
+    "Serbian": "Serbe",
+    "Bosnian": "Bosniaque",
+    "Slovenian": "Slovène",
+    "Danish": "Danois",
+    "Swedish": "Suédois",
+    "Norwegian": "Norvégien",
+    "Finnish": "Finnois",
+    "Greek": "Grec",
+    "Turkish": "Turc",
+    "Arabic": "Arabe",
+    "Hebrew": "Hébreu",
+    "Thai": "Thaï",
+    "Vietnamese": "Vietnamien",
+    "Indonesian": "Indonésien",
+    "Malay": "Malais",
+    "Hindi": "Hindi"
 };
-
 
 
 /* ================================
@@ -147,15 +142,8 @@ function loadLanguageFilter() {
             language;
 
 
-        option.textContent =
-            (
-                LANGUAGES[language]
-                || "🎵"
-            )
-            +
-            " "
-            +
-            language;
+option.textContent =
+    LANGUAGES[language] || language;
 
 
 
