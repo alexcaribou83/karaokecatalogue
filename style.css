@@ -256,14 +256,18 @@ button:disabled {
 
 
 .song-info h3 {
-
-    margin: 0 0 5px;
-
+    margin: 0;
     font-size: 18px;
+    font-weight: bold;
+    color: #111;
 
 }
 
-
+.title {
+    margin: 0 0 10px;
+    color: #666;
+    font-size: 15px;
+}
 
 .artist {
 
