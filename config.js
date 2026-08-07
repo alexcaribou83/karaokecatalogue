@@ -84,7 +84,7 @@ const LANGUAGES = {
    Création filtres langues
 ================================ */
 
-function loadLanguageFilter() {
+/*function loadLanguageFilter() {
 
 
     const select =
@@ -154,9 +154,85 @@ option.textContent =
 
 
 }
+*/
 
+function loadLanguageFilter() {
 
+    const select =
+        document.getElementById("languageFilter");
 
+    if (!select || typeof songs === "undefined") {
+        return;
+    }
+
+    const forbidden = [
+        "Arab",
+        "Arabic",
+        "Turkish",
+        "Turc",
+        "Finnish",
+        "Finlandais",
+        "Greek",
+        "Grec"
+    ];
+
+    let languages = [];
+
+    songs.forEach(song => {
+
+        if (!song.language) {
+            return;
+        }
+
+        const values = Array.isArray(song.language)
+            ? song.language
+            : String(song.language).split(",");
+
+        values.forEach(language => {
+
+            language = language.trim();
+
+            if (!language) {
+                return;
+            }
+
+            const lower = language.toLowerCase();
+
+            const blocked = forbidden.some(item =>
+                lower === item.toLowerCase()
+            );
+
+            if (!blocked) {
+                languages.push(language);
+            }
+
+        });
+
+    });
+
+    languages = [
+        ...new Set(languages)
+    ].sort((a, b) =>
+        a.localeCompare(b, "fr", {
+            sensitivity: "base"
+        })
+    );
+
+    languages.forEach(language => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = language;
+
+        option.textContent =
+            LANGUAGES[language] || language;
+
+        select.appendChild(option);
+
+    });
+
+}
 
 /* ================================
    Création filtres styles
