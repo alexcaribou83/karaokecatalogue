@@ -256,10 +256,9 @@ button:disabled {
 
 
 .song-info h3 {
-    margin: 0;
+       margin: 0 0 5px;
+
     font-size: 18px;
-    font-weight: bold;
-    color: #111;
 
 }
 
